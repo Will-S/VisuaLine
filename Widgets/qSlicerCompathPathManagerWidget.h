@@ -22,12 +22,13 @@
 #define __qSlicerCompathPathManagerWidget_h
 
 // Qt includes
-#include <QWidget>
 #include <QCheckBox>
 
 #include <ctkVTKObject.h>
 // PathManager Widgets includes
 #include "qSlicerCompathModuleWidgetsExport.h"
+
+#include "qSlicerWidget.h"
 
 class qSlicerCompathPathManagerWidgetPrivate;
 class vtkMRMLScene;
@@ -35,17 +36,17 @@ class vtkMRMLNode;
 
 /// \ingroup Slicer_QtModules_Compath
 class Q_SLICER_MODULE_COMPATH_WIDGETS_EXPORT qSlicerCompathPathManagerWidget
-  : public QWidget
+  : public qSlicerWidget
 {
   Q_OBJECT
   QVTK_OBJECT
 public:
-  typedef QWidget Superclass;
+  typedef qSlicerWidget Superclass;
   qSlicerCompathPathManagerWidget(QWidget *parent=0);
   virtual ~qSlicerCompathPathManagerWidget();
 
 public slots:
-  void setMRMLScene(vtkMRMLScene* scene);
+  void onMRMLSceneChanged(vtkMRMLScene* scene);
 
 protected slots:
   void onHierarchyNodeChanged(vtkMRMLNode* hierarchy);
@@ -55,6 +56,8 @@ protected slots:
   void populatePathTable();
   void onRulerNodeModified(vtkObject* ruler, void* data);
   void onRulerDisplayNodeModified(vtkObject* ruler, void* data);
+  void onFiducialNodeModified(vtkObject* ruler, void* data);
+  void onFiducialDisplayNodeModified(vtkObject* ruler, void* data);
 
 protected:
   QScopedPointer<qSlicerCompathPathManagerWidgetPrivate> d_ptr;

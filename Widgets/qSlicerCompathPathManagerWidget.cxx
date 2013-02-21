@@ -20,6 +20,7 @@
 
 #include <sstream>
 #include <vector>
+#include <iomanip>
 
 // PathManager Widgets includes
 #include "qSlicerCompathPathManagerWidget.h"
@@ -47,11 +48,16 @@ public:
     qSlicerCompathPathManagerWidget& object);
   virtual void setupUi(qSlicerCompathPathManagerWidget*);
   int getRowFromNode(vtkMRMLAnnotationRulerNode* rulerNode);
-  vtkMRMLAnnotationRulerNode* getNodeFromRow(int row);
+  vtkMRMLAnnotationRulerNode* getRulerFromRow(int row);
+  vtkMRMLAnnotationFiducialNode* getFiducialFromRow(int row);
+  void deleteRow(int row);
+  QString convertCoordinatesToQString(double coord[3]);
 
   double SelectedRow;
   vtkMRMLAnnotationHierarchyNode* SelectedHierarchyNode;
-  std::vector<vtkMRMLAnnotationRulerNode*> RulerList;
+  typedef std::pair<vtkMRMLAnnotationRulerNode*, 
+    vtkMRMLAnnotationFiducialNode*> TargetPath;
+  std::vector<TargetPath> TargetPathList;
 };
 
 // --------------------------------------------------------------------------
@@ -80,11 +86,11 @@ int qSlicerCompathPathManagerWidgetPrivate
     return -1;
     }
 
-  if (this->RulerList.size() > 0)
+  if (this->TargetPathList.size() > 0)
     {
-    for (int i = 0; i < this->RulerList.size(); i++)
+    for (int i = 0; i < this->TargetPathList.size(); i++)
       {
-      if (this->RulerList[i] == rulerNode)
+      if (this->TargetPathList[i].first == rulerNode)
         {
         return i;
         }
@@ -95,23 +101,92 @@ int qSlicerCompathPathManagerWidgetPrivate
 
 // --------------------------------------------------------------------------
 vtkMRMLAnnotationRulerNode* 
-qSlicerCompathPathManagerWidgetPrivate::getNodeFromRow(int row)
+qSlicerCompathPathManagerWidgetPrivate::getRulerFromRow(int row)
 {
   if (row < 0)
     {
     return NULL;
     }
 
-  if (this->RulerList.size() >= row)
+  if (this->TargetPathList.size() >= row)
     {
     vtkMRMLAnnotationRulerNode* rulerNode =
-      this->RulerList[row];
+      this->TargetPathList[row].first;
     if (rulerNode)
       {
       return rulerNode;
       }
     }
   return NULL;
+}
+
+// --------------------------------------------------------------------------
+vtkMRMLAnnotationFiducialNode* 
+qSlicerCompathPathManagerWidgetPrivate::getFiducialFromRow(int row)
+{
+  if (row < 0)
+    {
+    return NULL;
+    }
+
+  if (this->TargetPathList.size() >= row)
+    {
+    vtkMRMLAnnotationFiducialNode* fiduNode =
+      this->TargetPathList[row].second;
+    if (fiduNode)
+      {
+      return fiduNode;
+      }
+    }
+  return NULL;
+}
+
+// --------------------------------------------------------------------------
+void qSlicerCompathPathManagerWidgetPrivate
+::deleteRow(int row)
+{
+  Q_Q(qSlicerCompathPathManagerWidget);
+
+  if (row < 0)
+    {
+    return;
+    }
+
+  // Get Nodes
+  vtkMRMLAnnotationRulerNode* rulerNode =
+    this->TargetPathList[row].first;
+  vtkMRMLAnnotationFiducialNode* fiduNode =
+    this->TargetPathList[row].second;
+
+  if (fiduNode && rulerNode)
+    {
+    // Remove from TableWidget
+    this->PathTable->removeRow(row);
+
+    // Remove from vector
+    this->TargetPathList.erase(this->TargetPathList.begin() + row);
+
+    // Remove nodes
+    if (q->mrmlScene())
+      {
+      q->mrmlScene()->RemoveNode(rulerNode);
+      q->mrmlScene()->RemoveNode(fiduNode);      
+      }
+    }
+}
+
+//-----------------------------------------------------------------------------
+QString qSlicerCompathPathManagerWidgetPrivate
+::convertCoordinatesToQString(double coord[3])
+{
+  std::stringstream tmp;
+  tmp << "(" 
+      << setprecision(1) << coord[0] << ","
+      << setprecision(1) << coord[1] << ","
+      << setprecision(1) << coord[2] 
+      << ")";
+  QString coordString = QString(tmp.str().c_str());
+  return coordString;
 }
 
 //-----------------------------------------------------------------------------
@@ -125,6 +200,9 @@ qSlicerCompathPathManagerWidget
 {
   Q_D(qSlicerCompathPathManagerWidget);
   d->setupUi(this);
+
+  connect(this, SIGNAL(mrmlSceneChanged(vtkMRMLScene*)),
+	  this, SLOT(onMRMLSceneChanged(vtkMRMLScene*)));
 
   connect(d->HierarchySelectorWidget, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
           this, SLOT(onHierarchyNodeChanged(vtkMRMLNode*)));
@@ -148,9 +226,10 @@ qSlicerCompathPathManagerWidget
 
 //-----------------------------------------------------------------------------
 void qSlicerCompathPathManagerWidget
-::setMRMLScene(vtkMRMLScene* scene)
+::onMRMLSceneChanged(vtkMRMLScene* scene)
 {
   Q_D(qSlicerCompathPathManagerWidget);
+    
   if (d->HierarchySelectorWidget)
     {
     d->HierarchySelectorWidget->setMRMLScene(scene);
@@ -183,7 +262,7 @@ void qSlicerCompathPathManagerWidget
 {
   Q_D(qSlicerCompathPathManagerWidget);
   
-  if (!hierarchy)
+  if (!hierarchy || (d->SelectedHierarchyNode == hierarchy))
     {
     return;
     }
@@ -212,10 +291,8 @@ void qSlicerCompathPathManagerWidget
 {
   Q_D(qSlicerCompathPathManagerWidget);
   
-  std::cerr << "Row selected: " << row << std::endl;
-
   vtkMRMLAnnotationRulerNode* selectedNode =
-    d->getNodeFromRow(row);
+    d->getRulerFromRow(row);
   if (selectedNode)
     {
     d->PathProjectionWidget->setMRMLRulerNode(selectedNode);
@@ -237,6 +314,9 @@ void qSlicerCompathPathManagerWidget
 
   if (d->SelectedRow >= 0)
     {
+    d->deleteRow(d->SelectedRow);
+    }
+/*
     // Turn off visibility
     vtkMRMLAnnotationRulerNode* selectedNode =
       d->getNodeFromRow(d->SelectedRow);
@@ -249,6 +329,7 @@ void qSlicerCompathPathManagerWidget
     d->PathTable->removeRow(d->SelectedRow);
     d->RulerList.erase(d->RulerList.begin() + d->SelectedRow);
     }
+  */
 }
 
 //-----------------------------------------------------------------------------
@@ -263,19 +344,14 @@ void qSlicerCompathPathManagerWidget
     }
 
   // Turn off visibility
-  for (int i = 0; i < d->RulerList.size(); i++)
+  for (int i = 0; i < d->TargetPathList.size(); i++)
     {
-    vtkMRMLAnnotationRulerNode* selectedNode =
-      d->getNodeFromRow(i);
-    if (selectedNode)
-      {
-      selectedNode->SetDisplayVisibility(0);
-      }    
+    d->SelectedRow = 0;
+    d->deleteRow(d->SelectedRow);
+    //this->onDeleteButtonClicked();
     }
 
   // Clear arrays
-  d->PathTable->clear();
-  d->RulerList.clear();
   d->SelectedRow = -1;
 
   if (d->PathProjectionGroup)
@@ -316,28 +392,23 @@ void qSlicerCompathPathManagerWidget
       // Convention:
       // Point1 -> Entry point
       // Point2 -> Target
-      double targetPosition[4], entryPosition[4];
-      rulerNode->GetPositionWorldCoordinates1(entryPosition);
-      rulerNode->GetPositionWorldCoordinates2(targetPosition);
+      double targetWorld[4], entryWorld[4];
+      rulerNode->GetPositionWorldCoordinates1(entryWorld);
+      rulerNode->GetPositionWorldCoordinates2(targetWorld);
 
+      double targetPosition[3];
+      targetPosition[0] = targetWorld[0];
+      targetPosition[1] = targetWorld[1];
+      targetPosition[2] = targetWorld[2];
+            
       QString nodeName = QString(rulerNode->GetName());
-      std::stringstream targetStream, entryStream;
-      targetStream << "(" 
-                   << targetPosition[0] << ","
-                   << targetPosition[1] << ","
-                   << targetPosition[2] 
-                   << ")";
-
-      entryStream << "(" 
-                  << entryPosition[0] << ","
-                  << entryPosition[1] << ","
-                  << entryPosition[2] 
-                  << ")";
+      QString targetString = d->convertCoordinatesToQString(targetWorld);
+      QString entryString = d->convertCoordinatesToQString(entryWorld);
 
       QCheckBox *nodeVisibility = new QCheckBox("", d->PathTable);
       QTableWidgetItem* nameItem = new QTableWidgetItem(nodeName);
-      QTableWidgetItem* targetItem = new QTableWidgetItem(QString(targetStream.str().c_str()));
-      QTableWidgetItem* entryItem = new QTableWidgetItem(QString(entryStream.str().c_str()));
+      QTableWidgetItem* targetItem = new QTableWidgetItem(targetString);
+      QTableWidgetItem* entryItem = new QTableWidgetItem(entryString);
 
       // Insert new row
       d->PathTable->insertRow(i);
@@ -345,11 +416,26 @@ void qSlicerCompathPathManagerWidget
       d->PathTable->setItem(i, 1, targetItem);
       d->PathTable->setItem(i, 2, entryItem);
       d->PathTable->setCellWidget(i, 3, nodeVisibility);
-      d->RulerList.push_back(rulerNode);
+
+      // Create fiducial at target
+      vtkSmartPointer<vtkMRMLAnnotationFiducialNode> fiduTarget
+        = vtkSmartPointer<vtkMRMLAnnotationFiducialNode>::New();
+      if (this->mrmlScene())
+        {
+        this->mrmlScene()->AddNode(fiduTarget);
+        }
+      fiduTarget->AddControlPoint(targetPosition,1,1);
+      d->TargetPathList.push_back(std::make_pair(rulerNode, fiduTarget));
+
+      // Connect events
       this->qvtkConnect(rulerNode, vtkCommand::ModifiedEvent,
                         this, SLOT(onRulerNodeModified(vtkObject*, void*)));
       this->qvtkConnect(rulerNode, vtkMRMLDisplayableNode::DisplayModifiedEvent,
                         this, SLOT(onRulerDisplayNodeModified(vtkObject*, void*)));
+      this->qvtkConnect(fiduTarget, vtkCommand::ModifiedEvent,
+                        this, SLOT(onFiducialNodeModified(vtkObject*, void*)));
+      this->qvtkConnect(fiduTarget, vtkMRMLDisplayableNode::DisplayModifiedEvent,
+                        this, SLOT(onFiducialDisplayNodeModified(vtkObject*, void*)));
       }
     }
 }
@@ -421,4 +507,20 @@ void qSlicerCompathPathManagerWidget
     QCheckBox *rulerVisibility = qobject_cast<QCheckBox *>(d->PathTable->cellWidget(currentRow, 3));
     rulerVisibility->setChecked(rulerNode->GetDisplayVisibility());    
     }
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerCompathPathManagerWidget
+::onFiducialNodeModified(vtkObject* fidu, void* data)
+{
+  Q_D(qSlicerCompathPathManagerWidget);
+
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerCompathPathManagerWidget
+::onFiducialDisplayNodeModified(vtkObject* fidu, void* data)
+{
+  Q_D(qSlicerCompathPathManagerWidget);
+
 }
