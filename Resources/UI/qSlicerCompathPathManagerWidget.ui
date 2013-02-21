@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>qSlicerCompathPathManagerWidget</class>
- <widget class="QWidget" name="qSlicerCompathPathManagerWidget">
+ <widget class="qSlicerWidget" name="qSlicerCompathPathManagerWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>370</width>
-    <height>631</height>
+    <width>327</width>
+    <height>339</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,25 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="qMRMLNodeComboBox" name="HierarchySelectorWidget"/>
+    <widget class="qMRMLNodeComboBox" name="HierarchySelectorWidget">
+     <property name="nodeTypes">
+      <stringlist>
+       <string>vtkMRMLAnnotationHierarchyNode</string>
+      </stringlist>
+     </property>
+     <property name="showHidden">
+      <bool>true</bool>
+     </property>
+     <property name="showChildNodeTypes">
+      <bool>false</bool>
+     </property>
+     <property name="addEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="removeEnabled">
+      <bool>false</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QTableWidget" name="PathTable">
@@ -91,12 +109,12 @@
     </layout>
    </item>
    <item>
-    <widget class="QGroupBox" name="PathProjectionGroup">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
+    <widget class="ctkCollapsibleGroupBox" name="PathProjectionGroup">
      <property name="title">
       <string>Trajectory Projection</string>
+     </property>
+     <property name="collapsed">
+      <bool>true</bool>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
@@ -110,12 +128,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="TargetProjectionGroup">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
+    <widget class="ctkCollapsibleGroupBox" name="TargetProjectionGroup">
      <property name="title">
       <string>Target Projection</string>
+     </property>
+     <property name="collapsed">
+      <bool>true</bool>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
@@ -127,6 +145,19 @@
       </item>
      </layout>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>
@@ -152,9 +183,19 @@
    <extends>qMRMLWidget</extends>
    <header>qMRMLAnnotationRulerProjectionPropertyWidget.h</header>
   </customwidget>
+  <customwidget>
+   <class>qSlicerWidget</class>
+   <extends>QWidget</extends>
+   <header>qSlicerWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ctkCollapsibleGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>ctkCollapsibleGroupBox.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
- <resources>
-  <include location="../qSlicerCompathModule.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
