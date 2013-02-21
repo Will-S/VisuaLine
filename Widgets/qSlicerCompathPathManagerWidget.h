@@ -46,7 +46,6 @@ public:
   virtual ~qSlicerCompathPathManagerWidget();
 
 public slots:
-  void onMRMLSceneChanged(vtkMRMLScene* scene);
 
 protected slots:
   void onHierarchyNodeChanged(vtkMRMLNode* hierarchy);

@@ -201,9 +201,6 @@ qSlicerCompathPathManagerWidget
   Q_D(qSlicerCompathPathManagerWidget);
   d->setupUi(this);
 
-  connect(this, SIGNAL(mrmlSceneChanged(vtkMRMLScene*)),
-	  this, SLOT(onMRMLSceneChanged(vtkMRMLScene*)));
-
   connect(d->HierarchySelectorWidget, SIGNAL(currentNodeChanged(vtkMRMLNode*)),
           this, SLOT(onHierarchyNodeChanged(vtkMRMLNode*)));
 
@@ -222,38 +219,6 @@ qSlicerCompathPathManagerWidget
 qSlicerCompathPathManagerWidget
 ::~qSlicerCompathPathManagerWidget()
 {
-}
-
-//-----------------------------------------------------------------------------
-void qSlicerCompathPathManagerWidget
-::onMRMLSceneChanged(vtkMRMLScene* scene)
-{
-  Q_D(qSlicerCompathPathManagerWidget);
-    
-  if (d->HierarchySelectorWidget)
-    {
-    d->HierarchySelectorWidget->setMRMLScene(scene);
-    }
-
-  if (d->PathProjectionWidget)
-    {
-    d->PathProjectionWidget->setMRMLScene(scene);
-    }
-
-  if (d->TargetProjectionWidget)
-    {
-    d->TargetProjectionWidget->setMRMLScene(scene);
-    }
-
-  if (d->PathProjectionWidget)
-    {
-    d->PathProjectionWidget->setMRMLScene(scene);
-    }
-
-  if (d->TargetProjectionWidget)
-    {
-    d->TargetProjectionWidget->setMRMLScene(scene);
-    }
 }
 
 //-----------------------------------------------------------------------------

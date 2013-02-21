@@ -19,6 +19,7 @@
 #include "vtkSlicerCompathLogic.h"
 
 // MRML includes
+#include "vtkMRMLNITNode.h"
 
 // VTK includes
 #include <vtkNew.h>
@@ -59,6 +60,10 @@ void vtkSlicerCompathLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 void vtkSlicerCompathLogic::RegisterNodes()
 {
   assert(this->GetMRMLScene() != 0);
+
+  vtkMRMLNITNode* nitNode = vtkMRMLNITNode::New();
+  this->GetMRMLScene()->RegisterNodeClass(nitNode);
+  nitNode->Delete();
 }
 
 //---------------------------------------------------------------------------

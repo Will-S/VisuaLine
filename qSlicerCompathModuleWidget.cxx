@@ -65,11 +65,5 @@ void qSlicerCompathModuleWidget::setup()
   Q_D(qSlicerCompathModuleWidget);
   d->setupUi(this);
   this->Superclass::setup();
-  
-  if (d->PathManager)
-    {
-    connect(this, SIGNAL(mrmlSceneChanged(vtkMRMLScene*)),
-            d->PathManager, SLOT(setMRMLScene(vtkMRMLScene*)));
-    }
 }
 
