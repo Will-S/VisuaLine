@@ -30,27 +30,13 @@
     </widget>
    </item>
    <item>
-    <widget class="QTableWidget" name="PathTable">
-     <column>
-      <property name="text">
-       <string>Name</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Target</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Entry</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Visibility</string>
-      </property>
-     </column>
+    <widget class="QTreeView" name="PathTreeView">
+     <attribute name="headerVisible">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="headerDefaultSectionSize">
+      <number>250</number>
+     </attribute>
     </widget>
    </item>
    <item>

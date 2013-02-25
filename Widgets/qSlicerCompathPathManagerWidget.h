@@ -52,11 +52,7 @@ protected slots:
   void onRowSelected(int row, int column);
   void onDeleteButtonClicked();
   void onClearButtonClicked();
-  void populatePathTable();
-  void onRulerNodeModified(vtkObject* ruler, void* data);
-  void onRulerDisplayNodeModified(vtkObject* ruler, void* data);
-  void onFiducialNodeModified(vtkObject* ruler, void* data);
-  void onFiducialDisplayNodeModified(vtkObject* ruler, void* data);
+  void populateTreeView();
 
 protected:
   QScopedPointer<qSlicerCompathPathManagerWidgetPrivate> d_ptr;
