@@ -19,6 +19,7 @@
 ==============================================================================*/
 
 #include "qSlicerCompathTreeItem.h"
+#include <iostream>
 
 // --------------------------------------------------------------------------
 qSlicerCompathTreeItem
@@ -29,6 +30,7 @@ qSlicerCompathTreeItem
    this->checkState = Qt::Checked;
    this->PathNode = NULL;
    this->TargetNode = NULL;
+   this->VirtualOffsetNode = NULL;
  }
 
 // --------------------------------------------------------------------------
@@ -45,6 +47,11 @@ qSlicerCompathTreeItem
   if (this->TargetNode)
     {
     this->TargetNode->Delete();
+    }
+
+  if (this->VirtualOffsetNode)
+    {
+    this->VirtualOffsetNode->Delete();
     }
 }
 
@@ -148,6 +155,89 @@ vtkMRMLAnnotationFiducialNode* qSlicerCompathTreeItem
 ::getTargetNode()
 {
   return this->TargetNode;
+}
+
+// --------------------------------------------------------------------------
+void qSlicerCompathTreeItem
+::setVirtualOffsetNode(vtkMRMLAnnotationRulerNode* virtualTip)
+{
+  if (virtualTip)
+    {
+    this->VirtualOffsetNode = virtualTip;
+
+    if (this->VirtualOffsetNode->GetAnnotationLineDisplayNode())
+      {
+      // Green color
+      this->VirtualOffsetNode->GetAnnotationLineDisplayNode()
+        ->SetColor(0,1,0);
+      
+      if (this->PathNode)
+        {
+        double p2[3];
+        this->PathNode->GetPosition2(p2);
+        this->VirtualOffsetNode->SetPosition1(p2);
+        this->VirtualOffsetNode->SetPosition2(p2);
+        }
+      }
+    }
+}
+
+
+// --------------------------------------------------------------------------
+vtkMRMLAnnotationRulerNode* qSlicerCompathTreeItem
+::getVirtualOffsetNode()
+{
+  return this->VirtualOffsetNode;
+}
+
+// --------------------------------------------------------------------------
+void qSlicerCompathTreeItem
+::setVirtualOffset(double offset)
+{
+  if (this->VirtualOffsetNode && this->PathNode)
+    {
+    if (offset == 0)
+      {
+      // Turn off node visibility
+      this->VirtualOffsetNode->SetDisplayVisibility(0);
+      }
+    else
+      {
+      // Set points position
+      double p1[3], p2[3], p2minusp1[3];
+      this->PathNode->GetPosition1(p1);
+      this->PathNode->GetPosition2(p2);
+      vtkMath::Subtract(p2,p1,p2minusp1);
+      vtkMath::Normalize(p2minusp1);
+      
+      double offsetCoordinates[3];
+      offsetCoordinates[0] = p2[0] + p2minusp1[0]*offset;
+      offsetCoordinates[1] = p2[1] + p2minusp1[1]*offset;
+      offsetCoordinates[2] = p2[2] + p2minusp1[2]*offset;
+
+      this->VirtualOffsetNode->SetPosition2(offsetCoordinates);
+
+      // Turn on visibility if off
+      if (this->VirtualOffsetNode->GetDisplayVisibility() == 0)
+        {
+        this->VirtualOffsetNode->SetDisplayVisibility(1);
+        }
+      }
+    this->VirtualOffsetNode->Modified();
+    }
+}
+
+// --------------------------------------------------------------------------
+double qSlicerCompathTreeItem
+::getVirtualOffset()
+{
+  if (this->VirtualOffsetNode)
+    {
+    std::cerr << "Offset: " << this->VirtualOffsetNode->GetDistanceMeasurement() << std::endl;
+    return this->VirtualOffsetNode->GetDistanceMeasurement();
+    }
+  std::cerr << "Fail" << std::endl;
+  return 0;
 }
 
 

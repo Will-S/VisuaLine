@@ -231,10 +231,16 @@ bool qSlicerCompathTreeModel
       {
       if (item->getPathNode())
         {
+	// TODO: Turn off projection too ?
         item->getPathNode()->SetDisplayVisibility(checkStatus);
+	if (item->getVirtualOffsetNode())
+	  {
+	  item->getVirtualOffsetNode()->SetDisplayVisibility(checkStatus);
+	  }
         }
       if (item->getTargetNode())
         {
+	// TODO: Turn off projection too ?
         item->getTargetNode()->SetDisplayVisibility(checkStatus);
         }
       }
@@ -260,9 +266,10 @@ void qSlicerCompathTreeModel
   qSlicerCompathTreeItem *newParent 
     = new qSlicerCompathTreeItem(topLevel, this->rootItem);
   this->beginInsertRows(QModelIndex(), this->rootItem->childCount(), this->rootItem->childCount());
-//  this->insertRows(this->rootItem->childCount()+1, 1, QModelIndex());
   this->rootItem->appendChild(newParent);
   this->endInsertRows();
+
+  QModelIndex newParentIndex = this->index(this->rootItem->childCount()-1, 0, QModelIndex());
 
   // Path
   QVector<QVariant> pathItems;
@@ -270,7 +277,9 @@ void qSlicerCompathTreeModel
   qSlicerCompathTreeItem* pathItem
     = new qSlicerCompathTreeItem(pathItems, newParent);
   pathItem->setPathNode(trajectoryNode);
+  this->beginInsertRows(newParentIndex, newParent->childCount(), newParent->childCount());
   newParent->appendChild(pathItem);
+  this->endInsertRows();
 
   // Fiducial
   std::stringstream tPos;
@@ -287,5 +296,9 @@ void qSlicerCompathTreeModel
   qSlicerCompathTreeItem* targetItem
     = new qSlicerCompathTreeItem(targetItems, newParent);
   targetItem->setTargetNode(targetNode);
+  this->beginInsertRows(newParentIndex, newParent->childCount(), newParent->childCount());
   newParent->appendChild(targetItem);
+  this->endInsertRows();
+
+  // TODO: Update fiducial with RAS coordinates
 }

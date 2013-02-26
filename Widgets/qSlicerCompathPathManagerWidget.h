@@ -23,6 +23,7 @@
 
 // Qt includes
 #include <QCheckBox>
+#include <QModelIndex>
 
 #include <ctkVTKObject.h>
 // PathManager Widgets includes
@@ -31,6 +32,7 @@
 #include "qSlicerWidget.h"
 
 class qSlicerCompathPathManagerWidgetPrivate;
+class qSlicerCompathTreeItem;
 class vtkMRMLScene;
 class vtkMRMLNode;
 
@@ -49,10 +51,12 @@ public slots:
 
 protected slots:
   void onHierarchyNodeChanged(vtkMRMLNode* hierarchy);
-  void onRowSelected(int row, int column);
   void onDeleteButtonClicked();
   void onClearButtonClicked();
   void populateTreeView();
+  void onRowSelected(const QModelIndex& index);
+  void setMRMLNodeProjectionWidget(qSlicerCompathTreeItem *item);
+  void onVirtualOffsetChanged(double newOffset);
 
 protected:
   QScopedPointer<qSlicerCompathPathManagerWidgetPrivate> d_ptr;

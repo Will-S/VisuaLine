@@ -27,6 +27,9 @@
 
 #include "vtkMRMLAnnotationRulerNode.h"
 #include "vtkMRMLAnnotationFiducialNode.h"
+#include "vtkMRMLAnnotationLineDisplayNode.h"
+
+#include "vtkMath.h"
 
 class qSlicerCompathTreeItem
 {
@@ -34,8 +37,7 @@ class qSlicerCompathTreeItem
   qSlicerCompathTreeItem(const QVector<QVariant> &data, qSlicerCompathTreeItem* parent = 0);
   ~qSlicerCompathTreeItem();
   
-  void appendChild(qSlicerCompathTreeItem* child);
-  
+  void appendChild(qSlicerCompathTreeItem* child);  
   qSlicerCompathTreeItem* child(int row);
   int childCount() const;
   int columnCount() const;
@@ -48,6 +50,10 @@ class qSlicerCompathTreeItem
   vtkMRMLAnnotationRulerNode* getPathNode();
   void setTargetNode(vtkMRMLAnnotationFiducialNode* fiducialNode);
   vtkMRMLAnnotationFiducialNode* getTargetNode();
+  void setVirtualOffset(double offset);
+  double getVirtualOffset();
+  void setVirtualOffsetNode(vtkMRMLAnnotationRulerNode* virtualTip);
+  vtkMRMLAnnotationRulerNode* getVirtualOffsetNode();
 
  private:
   QList<qSlicerCompathTreeItem*> childItems;
@@ -55,6 +61,7 @@ class qSlicerCompathTreeItem
   qSlicerCompathTreeItem* parentItem;
   Qt::CheckState checkState;
   vtkMRMLAnnotationRulerNode* PathNode;
+  vtkMRMLAnnotationRulerNode* VirtualOffsetNode;
   vtkMRMLAnnotationFiducialNode* TargetNode;
 };
 

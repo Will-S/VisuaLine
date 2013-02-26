@@ -15,16 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="ctkCollapsibleButton" name="CTKCollapsibleButton">
-     <property name="text">
-      <string>Display</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="qSlicerCompathPathManagerWidget" name="PathManager" native="true"/>
-      </item>
-     </layout>
-    </widget>
+    <widget class="qSlicerCompathPathManagerWidget" name="PathManager" native="true"/>
    </item>
    <item>
     <spacer name="verticalSpacer">
@@ -46,12 +37,6 @@
    <class>qSlicerWidget</class>
    <extends>QWidget</extends>
    <header>qSlicerWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ctkCollapsibleButton</class>
-   <extends>QWidget</extends>
-   <header>ctkCollapsibleButton.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

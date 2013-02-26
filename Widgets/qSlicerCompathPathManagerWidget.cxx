@@ -57,7 +57,8 @@ public:
   void deleteRow(int row);
   QString convertCoordinatesToQString(double coord[3]);
 
-  double SelectedRow;
+  QModelIndex SelectedRow;
+  QModelIndex TopLevelSelection;
   vtkMRMLAnnotationHierarchyNode* SelectedHierarchyNode;
   typedef std::pair<vtkMRMLAnnotationRulerNode*, 
     vtkMRMLAnnotationFiducialNode*> TargetPath;
@@ -71,7 +72,6 @@ qSlicerCompathPathManagerWidgetPrivate
   qSlicerCompathPathManagerWidget& object)
   : q_ptr(&object)
 {
-  this->SelectedRow = -1;
   this->SelectedHierarchyNode = NULL;
   this->PathTreeModel = new qSlicerCompathTreeModel();
 }
@@ -263,7 +263,12 @@ qSlicerCompathPathManagerWidget
     {
     d->PathTreeView->setModel(d->PathTreeModel);
     //d->PathTreeView->expandAll();
+    connect(d->PathTreeView, SIGNAL(clicked(const QModelIndex)),
+            this, SLOT(onRowSelected(const QModelIndex)));
     }
+
+  connect(d->VirtualOffsetSlider, SIGNAL(valueChanged(double)),
+          this, SLOT(onVirtualOffsetChanged(double)));
 }
 
 //-----------------------------------------------------------------------------
@@ -290,6 +295,8 @@ void qSlicerCompathPathManagerWidget
     return;
     }
 
+  d->ActiveNodeLabel->setText(d->SelectedHierarchyNode->GetName());
+
   double nOfChildren = d->SelectedHierarchyNode->GetNumberOfChildrenNodes();
   if (nOfChildren > 0)
     {
@@ -303,30 +310,9 @@ void qSlicerCompathPathManagerWidget
 
 //-----------------------------------------------------------------------------
 void qSlicerCompathPathManagerWidget
-::onRowSelected(int row, int column)
-{
-  Q_D(qSlicerCompathPathManagerWidget);
-  
-  vtkMRMLAnnotationRulerNode* selectedNode =
-    d->getRulerFromRow(row);
-  if (selectedNode)
-    {
-    d->PathProjectionWidget->setMRMLRulerNode(selectedNode);
-    d->PathProjectionGroup->setEnabled(1);
-    d->SelectedRow = row;
-    }
-}
-
-//-----------------------------------------------------------------------------
-void qSlicerCompathPathManagerWidget
 ::onDeleteButtonClicked()
 {
   Q_D(qSlicerCompathPathManagerWidget);
-
-  if (d->SelectedRow >= 0)
-    {
-    d->deleteRow(d->SelectedRow);
-    }
 }
 
 //-----------------------------------------------------------------------------
@@ -336,14 +322,8 @@ void qSlicerCompathPathManagerWidget
   Q_D(qSlicerCompathPathManagerWidget);
 
   // Turn off visibility
-  for (int i = 0; i < d->TargetPathList.size(); i++)
-    {
-    d->SelectedRow = 0;
-    d->deleteRow(d->SelectedRow);
-    }
 
   // Clear arrays
-  d->SelectedRow = -1;
 
   if (d->PathProjectionGroup)
     {
@@ -387,5 +367,134 @@ void qSlicerCompathPathManagerWidget
       
       d->PathTreeModel->addTrajectory(rulerNode, targetPoint.GetPointer());
       }
+    }
+
+  if (d->PathTreeModel->rowCount() > 0)
+    {
+    if (d->PathProjectionGroup)
+      {
+      d->PathProjectionGroup->setEnabled(1);
+      }
+    
+    if (d->TargetProjectionGroup)
+      {
+      d->TargetProjectionGroup->setEnabled(1);
+      }
+    }
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerCompathPathManagerWidget
+::onRowSelected(const QModelIndex& index)
+{
+  Q_D(qSlicerCompathPathManagerWidget);
+
+  if (!d->PathTreeModel)
+    {
+    return;
+    }
+  
+  d->SelectedRow = index;
+  
+  QModelIndex topLevelSelection
+    = d->PathTreeModel->parent(d->SelectedRow);
+
+  if (topLevelSelection.isValid())
+    {
+    // Child selected. Use parent node to set projection
+    d->TopLevelSelection = topLevelSelection;
+    }
+  else
+    {
+    d->TopLevelSelection = d->SelectedRow;
+    }
+  qSlicerCompathTreeItem* topLevelItem
+    = d->PathTreeModel->getItem(d->TopLevelSelection);
+
+  if (topLevelItem)
+    {
+    this->setMRMLNodeProjectionWidget(topLevelItem);
+    }
+
+  // Update slider if offset alread set
+  for (int i = 0; i < topLevelItem->childCount(); i++)
+    {
+    if (topLevelItem->child(i)->getPathNode())
+      {
+      double offsetValue = topLevelItem->child(i)->getVirtualOffset();
+      std::cerr << "Item: " << topLevelItem->child(i)->getPathNode()->GetName() << std::endl;
+      std::cerr << "offsetValue: " << offsetValue << std::endl;
+      d->VirtualOffsetSlider->setValue(offsetValue);
+      }
+    }
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerCompathPathManagerWidget
+::setMRMLNodeProjectionWidget(qSlicerCompathTreeItem* item)
+{
+  Q_D(qSlicerCompathPathManagerWidget);
+  
+  if (!d->PathProjectionWidget || !d->TargetProjectionWidget)
+    {
+    return;
+    }
+
+  if (item->childCount() > 0)
+    {
+    // Check node is a top level
+    for (int i = 0; i < item->childCount(); i++)
+      {
+      qSlicerCompathTreeItem* childItem
+        = item->child(i);
+      if (childItem->getPathNode())
+        {
+        d->PathProjectionWidget->setMRMLRulerNode(childItem->getPathNode());        
+        }
+      if (childItem->getTargetNode())
+        {
+        d->TargetProjectionWidget->setMRMLFiducialNode(childItem->getTargetNode());        
+        }
+      }
+    }
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerCompathPathManagerWidget
+::onVirtualOffsetChanged(double newOffset)
+{
+  Q_D(qSlicerCompathPathManagerWidget);
+
+  if (!d->PathTreeModel)
+    {
+    return;
+    }
+
+  qSlicerCompathTreeItem* parentItem
+    = d->PathTreeModel->getItem(d->TopLevelSelection);
+  qSlicerCompathTreeItem* pathItem = NULL;
+
+  // Find node with a PathNode
+  for (int i = 0; i < parentItem->childCount(); i++)
+    {
+    if (parentItem->child(i)->getPathNode())
+      {
+      pathItem = parentItem->child(i);
+      }
+    }
+
+  if (pathItem)
+    {
+    if (!pathItem->getVirtualOffsetNode())
+      {
+      vtkSmartPointer<vtkMRMLAnnotationRulerNode> virtualTip =
+        vtkSmartPointer<vtkMRMLAnnotationRulerNode>::New();
+      virtualTip->HideFromEditorsOn();
+      this->mrmlScene()->AddNode(virtualTip);
+      pathItem->setVirtualOffsetNode(virtualTip);
+      }
+    std::cerr << "Item: " << pathItem->getPathNode()->GetName() << std::endl;
+    std::cerr << "setOffset: " << newOffset << std::endl;
+    pathItem->setVirtualOffset(newOffset);
     }
 }

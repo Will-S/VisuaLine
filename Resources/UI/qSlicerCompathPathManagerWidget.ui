@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>327</width>
-    <height>339</height>
+    <height>376</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,74 +15,80 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="qMRMLNodeComboBox" name="HierarchySelectorWidget">
-     <property name="nodeTypes">
-      <stringlist>
-       <string>vtkMRMLNITNode</string>
-      </stringlist>
+    <widget class="ctkCollapsibleButton" name="CollapsibleButton">
+     <property name="text">
+      <string>Display</string>
      </property>
-     <property name="showChildNodeTypes">
-      <bool>false</bool>
+     <property name="contentsFrameShape">
+      <enum>QFrame::StyledPanel</enum>
      </property>
-     <property name="removeEnabled">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTreeView" name="PathTreeView">
-     <attribute name="headerVisible">
-      <bool>false</bool>
-     </attribute>
-     <attribute name="headerDefaultSectionSize">
-      <number>250</number>
-     </attribute>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="DeleteButton">
-       <property name="text">
-        <string>Delete</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="ClearButton">
-       <property name="text">
-        <string>Clear</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="ctkCollapsibleGroupBox" name="PathProjectionGroup">
-     <property name="title">
-      <string>Trajectory Projection</string>
-     </property>
-     <property name="collapsed">
-      <bool>true</bool>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
-       <widget class="qMRMLAnnotationRulerProjectionPropertyWidget" name="PathProjectionWidget">
-        <property name="enabled">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Active list: </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="ActiveNodeLabel">
+          <property name="text">
+           <string>None</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="DeleteButton">
+          <property name="text">
+           <string>Delete</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="ClearButton">
+          <property name="text">
+           <string>Clear</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTreeView" name="PathTreeView">
+        <attribute name="headerVisible">
          <bool>false</bool>
+        </attribute>
+        <attribute name="headerDefaultSectionSize">
+         <number>250</number>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Virtual Offset:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="ctkSliderWidget" name="VirtualOffsetSlider">
+        <property name="singleStep">
+         <double>0.100000000000000</double>
         </property>
        </widget>
       </item>
@@ -90,19 +96,64 @@
     </widget>
    </item>
    <item>
-    <widget class="ctkCollapsibleGroupBox" name="TargetProjectionGroup">
-     <property name="title">
-      <string>Target Projection</string>
+    <widget class="ctkCollapsibleButton" name="CollapsibleButton_2">
+     <property name="text">
+      <string>Advanced</string>
      </property>
      <property name="collapsed">
       <bool>true</bool>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
+     <property name="contentsFrameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
-       <widget class="qMRMLAnnotationFiducialProjectionPropertyWidget" name="TargetProjectionWidget">
-        <property name="enabled">
+       <widget class="qMRMLNodeComboBox" name="HierarchySelectorWidget">
+        <property name="nodeTypes">
+         <stringlist>
+          <string>vtkMRMLNITNode</string>
+         </stringlist>
+        </property>
+        <property name="showChildNodeTypes">
          <bool>false</bool>
         </property>
+        <property name="removeEnabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="ctkCollapsibleGroupBox" name="PathProjectionGroup">
+        <property name="title">
+         <string>Trajectory Projection</string>
+        </property>
+        <property name="collapsed">
+         <bool>true</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="qMRMLAnnotationRulerProjectionPropertyWidget" name="PathProjectionWidget">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="ctkCollapsibleGroupBox" name="TargetProjectionGroup">
+        <property name="title">
+         <string>Target Projection</string>
+        </property>
+        <property name="collapsed">
+         <bool>true</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="qMRMLAnnotationFiducialProjectionPropertyWidget" name="TargetProjectionWidget"/>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
@@ -152,10 +203,21 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ctkCollapsibleButton</class>
+   <extends>QWidget</extends>
+   <header>ctkCollapsibleButton.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>ctkCollapsibleGroupBox</class>
    <extends>QGroupBox</extends>
    <header>ctkCollapsibleGroupBox.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ctkSliderWidget</class>
+   <extends>QWidget</extends>
+   <header>ctkSliderWidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

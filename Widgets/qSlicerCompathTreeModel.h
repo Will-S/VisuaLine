@@ -52,11 +52,10 @@ class qSlicerCompathTreeModel : public QAbstractItemModel
   int columnCount(const QModelIndex &parent = QModelIndex()) const;
   void addTrajectory(vtkMRMLAnnotationRulerNode* trajectoryNode,
                      vtkMRMLAnnotationFiducialNode* targetNode);
+  qSlicerCompathTreeItem* getItem(const QModelIndex &index) const;
 
  private:
   void setupModelData(qSlicerCompathTreeItem* parent);
-  qSlicerCompathTreeItem* getItem(const QModelIndex &index) const;
-  QModelIndex indexForItem(qSlicerCompathTreeItem* item) const;
 
   qSlicerCompathTreeItem* rootItem;
 };
