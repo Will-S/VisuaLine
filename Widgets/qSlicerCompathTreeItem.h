@@ -28,6 +28,8 @@
 #include "vtkMRMLAnnotationRulerNode.h"
 #include "vtkMRMLAnnotationFiducialNode.h"
 #include "vtkMRMLAnnotationLineDisplayNode.h"
+#include "vtkMRMLAnnotationPointDisplayNode.h"
+#include "vtkMRMLAnnotationTextDisplayNode.h"
 
 #include "vtkMath.h"
 
@@ -63,6 +65,7 @@ class qSlicerCompathTreeItem
   vtkMRMLAnnotationRulerNode* PathNode;
   vtkMRMLAnnotationRulerNode* VirtualOffsetNode;
   vtkMRMLAnnotationFiducialNode* TargetNode;
+  double offsetValue;
 };
 
 #endif

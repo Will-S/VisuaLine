@@ -31,6 +31,7 @@ qSlicerCompathTreeItem
    this->PathNode = NULL;
    this->TargetNode = NULL;
    this->VirtualOffsetNode = NULL;
+   this->offsetValue = 0;
  }
 
 // --------------------------------------------------------------------------
@@ -165,10 +166,16 @@ void qSlicerCompathTreeItem
     {
     this->VirtualOffsetNode = virtualTip;
 
-    if (this->VirtualOffsetNode->GetAnnotationLineDisplayNode())
+    if (this->VirtualOffsetNode->GetAnnotationLineDisplayNode() &&
+        this->VirtualOffsetNode->GetAnnotationPointDisplayNode() &&
+        this->VirtualOffsetNode->GetAnnotationTextDisplayNode())
       {
       // Green color
       this->VirtualOffsetNode->GetAnnotationLineDisplayNode()
+        ->SetColor(0,1,0);
+      this->VirtualOffsetNode->GetAnnotationPointDisplayNode()
+        ->SetColor(0,1,0);
+      this->VirtualOffsetNode->GetAnnotationTextDisplayNode()
         ->SetColor(0,1,0);
       
       if (this->PathNode)
@@ -196,6 +203,7 @@ void qSlicerCompathTreeItem
 {
   if (this->VirtualOffsetNode && this->PathNode)
     {
+    this->offsetValue = offset;
     if (offset == 0)
       {
       // Turn off node visibility
@@ -231,6 +239,7 @@ void qSlicerCompathTreeItem
 double qSlicerCompathTreeItem
 ::getVirtualOffset()
 {
+/*
   if (this->VirtualOffsetNode)
     {
     std::cerr << "Offset: " << this->VirtualOffsetNode->GetDistanceMeasurement() << std::endl;
@@ -238,6 +247,8 @@ double qSlicerCompathTreeItem
     }
   std::cerr << "Fail" << std::endl;
   return 0;
+*/
+  return this->offsetValue;
 }
 
 
