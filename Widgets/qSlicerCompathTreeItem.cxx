@@ -42,17 +42,17 @@ qSlicerCompathTreeItem
 
   if (this->PathNode)
     {
-    this->PathNode->Delete();
+    this->PathNode->SetDisplayVisibility(0);
     }
 
   if (this->TargetNode)
     {
-    this->TargetNode->Delete();
+    this->TargetNode->SetDisplayVisibility(0);
     }
 
   if (this->VirtualOffsetNode)
     {
-    this->VirtualOffsetNode->Delete();
+    this->VirtualOffsetNode->SetDisplayVisibility(0);
     }
 }
 
@@ -201,15 +201,15 @@ vtkMRMLAnnotationRulerNode* qSlicerCompathTreeItem
 void qSlicerCompathTreeItem
 ::setVirtualOffset(double offset)
 {
+  if (this->offsetValue == offset)
+    {
+    return;
+    }
+
   if (this->VirtualOffsetNode && this->PathNode)
     {
-    this->offsetValue = offset;
-    if (offset == 0)
-      {
-      // Turn off node visibility
-      this->VirtualOffsetNode->SetDisplayVisibility(0);
-      }
-    else
+    // Only modify offset if ruler visible
+    if (this->VirtualOffsetNode->GetDisplayVisibility())
       {
       // Set points position
       double p1[3], p2[3], p2minusp1[3];
@@ -223,15 +223,11 @@ void qSlicerCompathTreeItem
       offsetCoordinates[1] = p2[1] + p2minusp1[1]*offset;
       offsetCoordinates[2] = p2[2] + p2minusp1[2]*offset;
 
+      this->VirtualOffsetNode->SetPosition1(p2);
       this->VirtualOffsetNode->SetPosition2(offsetCoordinates);
-
-      // Turn on visibility if off
-      if (this->VirtualOffsetNode->GetDisplayVisibility() == 0)
-        {
-        this->VirtualOffsetNode->SetDisplayVisibility(1);
-        }
+      this->offsetValue = offset;
+      this->VirtualOffsetNode->Modified();
       }
-    this->VirtualOffsetNode->Modified();
     }
 }
 
@@ -242,7 +238,7 @@ double qSlicerCompathTreeItem
 /*
   if (this->VirtualOffsetNode)
     {
-    std::cerr << "Offset: " << this->VirtualOffsetNode->GetDistanceMeasurement() << std::endl;
+    std::cerr << "Offset for " << this->getPathNode()->GetName() << ": " << this->VirtualOffsetNode->GetDistanceMeasurement() << std::endl;
     return this->VirtualOffsetNode->GetDistanceMeasurement();
     }
   std::cerr << "Fail" << std::endl;
@@ -251,5 +247,20 @@ double qSlicerCompathTreeItem
   return this->offsetValue;
 }
 
+// --------------------------------------------------------------------------
+bool qSlicerCompathTreeItem
+::removeChildren(int position, int count)
+{
+  if (position < 0 || position + count > childItems.size())
+    {
+    return false;
+    }
+
+  for (int row = 0; row < count; ++row)
+    {
+    delete childItems.takeAt(position);
+    }
+  return true;
+}
 
 

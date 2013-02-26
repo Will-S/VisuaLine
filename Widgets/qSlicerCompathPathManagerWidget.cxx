@@ -313,6 +313,28 @@ void qSlicerCompathPathManagerWidget
 ::onDeleteButtonClicked()
 {
   Q_D(qSlicerCompathPathManagerWidget);
+  
+  if (!d->PathTreeModel)
+    {
+    return;
+    }
+
+  if (d->TopLevelSelection.isValid())
+    {
+    // Remove node from scene first
+    int position = d->TopLevelSelection.row();
+    QModelIndex parentItem = d->TopLevelSelection.parent();
+
+    // Select item on top before deleting
+    QModelIndex nextParent = d->PathTreeModel
+      ->index(parentItem.row()-1, 0, QModelIndex());
+    d->PathTreeView->selectionModel()->select(nextParent, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+    d->SelectedRow = nextParent;
+    d->TopLevelSelection = nextParent;
+
+    // Remove from model
+    d->PathTreeModel->removeRows(position, 1, parentItem);
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -322,6 +344,12 @@ void qSlicerCompathPathManagerWidget
   Q_D(qSlicerCompathPathManagerWidget);
 
   // Turn off visibility
+  d->PathTreeView->selectionModel()->select(QModelIndex(), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+  d->SelectedRow = QModelIndex();
+  d->TopLevelSelection = QModelIndex();
+  
+  // Remove from model
+  d->PathTreeModel->removeRows(0, d->PathTreeModel->rowCount(QModelIndex()), QModelIndex());
 
   // Clear arrays
 
@@ -362,7 +390,7 @@ void qSlicerCompathPathManagerWidget
       // Create fiducial at target position
       vtkSmartPointer<vtkMRMLAnnotationFiducialNode> targetPoint
         = vtkSmartPointer<vtkMRMLAnnotationFiducialNode>::New();
-      this->mrmlScene()->AddNode(targetPoint);
+      targetPoint->Initialize(this->mrmlScene());
       targetPoint->SetFiducialWorldCoordinates(targetPosition);
       
       d->PathTreeModel->addTrajectory(rulerNode, targetPoint.GetPointer());
@@ -422,8 +450,6 @@ void qSlicerCompathPathManagerWidget
     if (topLevelItem->child(i)->getPathNode())
       {
       double offsetValue = topLevelItem->child(i)->getVirtualOffset();
-      std::cerr << "Item: " << topLevelItem->child(i)->getPathNode()->GetName() << std::endl;
-      std::cerr << "offsetValue: " << offsetValue << std::endl;
       d->VirtualOffsetSlider->setValue(offsetValue);
       }
     }
@@ -485,16 +511,14 @@ void qSlicerCompathPathManagerWidget
 
   if (pathItem)
     {
-    if (!pathItem->getVirtualOffsetNode())
+    if (!pathItem->getVirtualOffsetNode() && newOffset != 0)
       {
       vtkSmartPointer<vtkMRMLAnnotationRulerNode> virtualTip =
         vtkSmartPointer<vtkMRMLAnnotationRulerNode>::New();
       virtualTip->HideFromEditorsOn();
-      this->mrmlScene()->AddNode(virtualTip);
-      pathItem->setVirtualOffsetNode(virtualTip);
+      virtualTip->Initialize(this->mrmlScene());
+      pathItem->setVirtualOffsetNode(virtualTip.GetPointer());
       }
-    std::cerr << "Item: " << pathItem->getPathNode()->GetName() << std::endl;
-    std::cerr << "setOffset: " << newOffset << std::endl;
     pathItem->setVirtualOffset(newOffset);
     }
 }

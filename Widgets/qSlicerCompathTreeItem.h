@@ -56,6 +56,7 @@ class qSlicerCompathTreeItem
   double getVirtualOffset();
   void setVirtualOffsetNode(vtkMRMLAnnotationRulerNode* virtualTip);
   vtkMRMLAnnotationRulerNode* getVirtualOffsetNode();
+  bool removeChildren(int position, int count);
 
  private:
   QList<qSlicerCompathTreeItem*> childItems;

@@ -27,7 +27,6 @@ qSlicerCompathTreeModel::qSlicerCompathTreeModel(QObject* parent)
   QVector<QVariant> rootData;
   rootData << "Name";
   this->rootItem = new qSlicerCompathTreeItem(rootData);
-//  this->setupModelData(this->rootItem);
 }
 
 // --------------------------------------------------------------------------
@@ -170,20 +169,6 @@ QVariant qSlicerCompathTreeModel
 }
 
 // --------------------------------------------------------------------------
-void qSlicerCompathTreeModel
-::setupModelData(qSlicerCompathTreeItem* parent)
-{
-  /*
-  QVector<QVariant> myVariant;
-  myVariant.append("DTC");
-  myVariant.append("MotherFucker");
-  qSlicerCompathTreeItem* item = 
-    new qSlicerCompathTreeItem(myVariant, parent);
-  parent->appendChild(item);
-  */
-}
-
-// --------------------------------------------------------------------------
 qSlicerCompathTreeItem* qSlicerCompathTreeModel
 ::getItem(const QModelIndex &index) const
 {
@@ -231,16 +216,16 @@ bool qSlicerCompathTreeModel
       {
       if (item->getPathNode())
         {
-	// TODO: Turn off projection too ?
+        // TODO: Turn off projection too ?
         item->getPathNode()->SetDisplayVisibility(checkStatus);
-	if (item->getVirtualOffsetNode())
-	  {
-	  item->getVirtualOffsetNode()->SetDisplayVisibility(checkStatus);
-	  }
+        }
+      if (item->getVirtualOffsetNode())
+        {
+        item->getVirtualOffsetNode()->SetDisplayVisibility(checkStatus);
         }
       if (item->getTargetNode())
         {
-	// TODO: Turn off projection too ?
+        // TODO: Turn off projection too ?
         item->getTargetNode()->SetDisplayVisibility(checkStatus);
         }
       }
@@ -301,4 +286,20 @@ void qSlicerCompathTreeModel
   this->endInsertRows();
 
   // TODO: Update fiducial with RAS coordinates
+}
+
+// --------------------------------------------------------------------------
+bool qSlicerCompathTreeModel
+::removeRows(int position, int rows, const QModelIndex& parent)
+{
+  // Get item
+  qSlicerCompathTreeItem *parentItem
+    = this->getItem(parent);
+  bool success = true;
+
+  this->beginRemoveRows(parent, position, position + rows - 1);
+  success = parentItem->removeChildren(position, rows);
+  this->endRemoveRows();
+
+  return success;
 }

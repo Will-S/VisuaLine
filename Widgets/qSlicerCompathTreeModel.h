@@ -53,10 +53,9 @@ class qSlicerCompathTreeModel : public QAbstractItemModel
   void addTrajectory(vtkMRMLAnnotationRulerNode* trajectoryNode,
                      vtkMRMLAnnotationFiducialNode* targetNode);
   qSlicerCompathTreeItem* getItem(const QModelIndex &index) const;
+  bool removeRows(int position, int rows, const QModelIndex& parent);
 
  private:
-  void setupModelData(qSlicerCompathTreeItem* parent);
-
   qSlicerCompathTreeItem* rootItem;
 };
 
