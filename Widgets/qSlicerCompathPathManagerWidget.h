@@ -32,7 +32,7 @@
 #include "qSlicerWidget.h"
 
 class qSlicerCompathPathManagerWidgetPrivate;
-class qSlicerCompathTreeItem;
+//class qSlicerCompathTreeItem;
 class vtkMRMLScene;
 class vtkMRMLNode;
 
@@ -53,10 +53,9 @@ protected slots:
   void onHierarchyNodeChanged(vtkMRMLNode* hierarchy);
   void onDeleteButtonClicked();
   void onClearButtonClicked();
-  void populateTreeView();
   void onRowSelected(const QModelIndex& index);
-  void setMRMLNodeProjectionWidget(qSlicerCompathTreeItem *item);
   void onVirtualOffsetChanged(double newOffset);
+  void populateTreeView();
 
 protected:
   QScopedPointer<qSlicerCompathPathManagerWidgetPrivate> d_ptr;

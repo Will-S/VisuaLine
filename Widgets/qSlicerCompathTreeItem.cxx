@@ -19,188 +19,103 @@
 ==============================================================================*/
 
 #include "qSlicerCompathTreeItem.h"
-#include <iostream>
 
 // --------------------------------------------------------------------------
 qSlicerCompathTreeItem
-::qSlicerCompathTreeItem(const QVector<QVariant> &data, qSlicerCompathTreeItem *parent)
- {
-   this->parentItem = parent;
-   this->itemData = data;
-   this->checkState = Qt::Checked;
-   this->PathNode = NULL;
-   this->TargetNode = NULL;
-   this->VirtualOffsetNode = NULL;
-   this->offsetValue = 0;
- }
-
-// --------------------------------------------------------------------------
-qSlicerCompathTreeItem
-::~qSlicerCompathTreeItem()
+::qSlicerCompathTreeItem(const QString& text) : QStandardItem(text)
 {
-  qDeleteAll(this->childItems);
-
-  if (this->PathNode)
-    {
-    this->PathNode->SetDisplayVisibility(0);
-    }
-
-  if (this->TargetNode)
-    {
-    this->TargetNode->SetDisplayVisibility(0);
-    }
-
-  if (this->VirtualOffsetNode)
-    {
-    this->VirtualOffsetNode->SetDisplayVisibility(0);
-    }
+  this->PathNode = NULL;
+  this->TargetNode = NULL;
+  this->VirtualOffsetNode = NULL;
+  this->OffsetValue = 0;
 }
 
 // --------------------------------------------------------------------------
-void qSlicerCompathTreeItem
-::appendChild(qSlicerCompathTreeItem* item)
+qSlicerCompathTreeItem::
+~qSlicerCompathTreeItem()
 {
-  this->childItems.append(item);
+  this->setVisibility(false);
 }
 
 // --------------------------------------------------------------------------
-qSlicerCompathTreeItem* qSlicerCompathTreeItem
-::child(int row)
-{
-  return this->childItems.value(row);
-}
-
-// --------------------------------------------------------------------------
-int qSlicerCompathTreeItem
-::childCount() const
-{
-  return this->childItems.count();
-}
-
-// --------------------------------------------------------------------------
-int qSlicerCompathTreeItem
-::row() const
-{
-  if (this->parentItem)
-    {
-    return this->parentItem
-      ->childItems.indexOf(const_cast<qSlicerCompathTreeItem*>(this));
-    }
-  return 0;
-}
-
-// --------------------------------------------------------------------------
-int qSlicerCompathTreeItem
-::columnCount() const
-{
-  return this->itemData.count();
-}
-
-// --------------------------------------------------------------------------
-QVariant qSlicerCompathTreeItem
-::data(int column) const
-{
-  return this->itemData.value(column);
-}
-
-// --------------------------------------------------------------------------
-qSlicerCompathTreeItem* qSlicerCompathTreeItem
-::parent()
-{
-  return this->parentItem;
-}
-
-// --------------------------------------------------------------------------
-Qt::CheckState qSlicerCompathTreeItem
-::isChecked() const
-{
-  return this->checkState;
-}
-
-// --------------------------------------------------------------------------
-void qSlicerCompathTreeItem
-::setCheckState(Qt::CheckState set)
-{
-  this->checkState = set;
-}
-
-// --------------------------------------------------------------------------
-void qSlicerCompathTreeItem
-::setPathNode(vtkMRMLAnnotationRulerNode* rulerNode)
+void qSlicerCompathTreeItem::
+setPathNode(vtkMRMLAnnotationRulerNode* rulerNode)
 {
   if (rulerNode)
     {
+    qvtkReconnect(this->PathNode, rulerNode, vtkCommand::ModifiedEvent,
+		  this, SLOT(onPathNodeModified()));
     this->PathNode = rulerNode;
     }
 }
 
 // --------------------------------------------------------------------------
-vtkMRMLAnnotationRulerNode* qSlicerCompathTreeItem
-::getPathNode()
+vtkMRMLAnnotationRulerNode* qSlicerCompathTreeItem::
+getPathNode()
 {
   return this->PathNode;
 }
 
 // --------------------------------------------------------------------------
-void qSlicerCompathTreeItem
-::setTargetNode(vtkMRMLAnnotationFiducialNode* fiducialNode)
+void qSlicerCompathTreeItem::
+setTargetNode(vtkMRMLAnnotationFiducialNode* fiducialNode)
 {
   if (fiducialNode)
     {
+    qvtkReconnect(this->TargetNode, fiducialNode, vtkCommand::ModifiedEvent,
+		  this, SLOT(onTargetNodeModified()));
     this->TargetNode = fiducialNode;
     }
 }
 
 // --------------------------------------------------------------------------
-vtkMRMLAnnotationFiducialNode* qSlicerCompathTreeItem
-::getTargetNode()
+vtkMRMLAnnotationFiducialNode* qSlicerCompathTreeItem::
+getTargetNode()
 {
   return this->TargetNode;
 }
 
 // --------------------------------------------------------------------------
-void qSlicerCompathTreeItem
-::setVirtualOffsetNode(vtkMRMLAnnotationRulerNode* virtualTip)
+void qSlicerCompathTreeItem::
+setVirtualOffsetNode(vtkMRMLAnnotationRulerNode* virtualTip)
 {
-  if (virtualTip)
+  if (!virtualTip || !this->PathNode)
     {
-    this->VirtualOffsetNode = virtualTip;
-
-    if (this->VirtualOffsetNode->GetAnnotationLineDisplayNode() &&
-        this->VirtualOffsetNode->GetAnnotationPointDisplayNode() &&
-        this->VirtualOffsetNode->GetAnnotationTextDisplayNode())
-      {
-      // Green color
-      this->VirtualOffsetNode->GetAnnotationLineDisplayNode()
-        ->SetColor(0,1,0);
-      this->VirtualOffsetNode->GetAnnotationPointDisplayNode()
-        ->SetColor(0,1,0);
-      this->VirtualOffsetNode->GetAnnotationTextDisplayNode()
-        ->SetColor(0,1,0);
-      
-      if (this->PathNode)
-        {
-        double p2[3];
-        this->PathNode->GetPosition2(p2);
-        this->VirtualOffsetNode->SetPosition1(p2);
-        this->VirtualOffsetNode->SetPosition2(p2);
-        }
-      }
+    return;
     }
+
+  // Set color to green
+  if (virtualTip->GetAnnotationLineDisplayNode() &&
+      virtualTip->GetAnnotationPointDisplayNode() &&
+      virtualTip->GetAnnotationTextDisplayNode())
+    {
+    virtualTip->GetAnnotationLineDisplayNode()->SetColor(0,1,0);
+    virtualTip->GetAnnotationPointDisplayNode()->SetColor(0,1,0);
+    virtualTip->GetAnnotationTextDisplayNode()->SetColor(0,1,0);
+    }
+
+  // Set points to target point
+  double p2[3];
+  this->PathNode->GetPosition2(p2);
+  virtualTip->SetPosition1(p2);
+  virtualTip->SetPosition2(p2);
+  virtualTip->SetLocked(1);
+  this->VirtualOffsetNode = virtualTip;
+  this->setOffsetVisibility(false);
 }
 
-
 // --------------------------------------------------------------------------
-vtkMRMLAnnotationRulerNode* qSlicerCompathTreeItem
-::getVirtualOffsetNode()
+vtkMRMLAnnotationRulerNode* qSlicerCompathTreeItem::
+getVirtualOffsetNode()
 {
   return this->VirtualOffsetNode;
 }
 
 // --------------------------------------------------------------------------
-void qSlicerCompathTreeItem
-::setVirtualOffset(double offset)
+void qSlicerCompathTreeItem::
+setVirtualOffset(double offset)
 {
+/*
   if (this->offsetValue == offset)
     {
     return;
@@ -229,11 +144,12 @@ void qSlicerCompathTreeItem
       this->VirtualOffsetNode->Modified();
       }
     }
+*/
 }
 
 // --------------------------------------------------------------------------
-double qSlicerCompathTreeItem
-::getVirtualOffset()
+double qSlicerCompathTreeItem::
+getVirtualOffset()
 {
 /*
   if (this->VirtualOffsetNode)
@@ -244,23 +160,18 @@ double qSlicerCompathTreeItem
   std::cerr << "Fail" << std::endl;
   return 0;
 */
-  return this->offsetValue;
+  return this->OffsetValue;
 }
 
 // --------------------------------------------------------------------------
-bool qSlicerCompathTreeItem
-::removeChildren(int position, int count)
+void qSlicerCompathTreeItem::
+onPathNodeModified()
 {
-  if (position < 0 || position + count > childItems.size())
-    {
-    return false;
-    }
-
-  for (int row = 0; row < count; ++row)
-    {
-    delete childItems.takeAt(position);
-    }
-  return true;
 }
 
+// --------------------------------------------------------------------------
+void qSlicerCompathTreeItem::
+onTargetNodeModified()
+{
+}
 

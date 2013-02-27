@@ -21,52 +21,113 @@
 #ifndef __qSlicerCompathTreeItem_h
 #define __qSlicerCompathTreeItem_h
 
-#include <QList>
-#include <QVector>
-#include <QVariant>
+// Qt includes
+#include <QStandardItem>
 
-#include "vtkMRMLAnnotationRulerNode.h"
+// MRML includes
 #include "vtkMRMLAnnotationFiducialNode.h"
 #include "vtkMRMLAnnotationLineDisplayNode.h"
 #include "vtkMRMLAnnotationPointDisplayNode.h"
+#include "vtkMRMLAnnotationRulerNode.h"
 #include "vtkMRMLAnnotationTextDisplayNode.h"
 
+// VTK includes
 #include "vtkMath.h"
+#include <ctkVTKObject.h>
 
-class qSlicerCompathTreeItem
+class qSlicerCompathTreeRootItem;
+class qSlicerCompathTreeItem : public QObject, public QStandardItem
 {
+  Q_OBJECT
+  QVTK_OBJECT
  public:
-  qSlicerCompathTreeItem(const QVector<QVariant> &data, qSlicerCompathTreeItem* parent = 0);
+    qSlicerCompathTreeItem(const QString& text);
   ~qSlicerCompathTreeItem();
   
-  void appendChild(qSlicerCompathTreeItem* child);  
-  qSlicerCompathTreeItem* child(int row);
+  // Qt Tree Items
+/*
+  qSlicerCompathTreeItem* parent();
+  void appendChild(QString child);  
+  QString child(int row);
   int childCount() const;
   int columnCount() const;
-  QVariant data(int column) const;
   int row() const;
-  qSlicerCompathTreeItem* parent();
-  Qt::CheckState isChecked() const;
-  void setCheckState(Qt::CheckState set);
+  QVariant data(int column) const;
+  //bool removeChildren(int position, int count);
+  */
+
+  // MRML Nodes
   void setPathNode(vtkMRMLAnnotationRulerNode* rulerNode);
   vtkMRMLAnnotationRulerNode* getPathNode();
   void setTargetNode(vtkMRMLAnnotationFiducialNode* fiducialNode);
   vtkMRMLAnnotationFiducialNode* getTargetNode();
-  void setVirtualOffset(double offset);
-  double getVirtualOffset();
   void setVirtualOffsetNode(vtkMRMLAnnotationRulerNode* virtualTip);
   vtkMRMLAnnotationRulerNode* getVirtualOffsetNode();
-  bool removeChildren(int position, int count);
-
+  inline void setVisibility(bool visibility);
+  inline void setPathVisibility(bool visibility);
+  inline void setTargetVisibility(bool visibility);
+  inline void setOffsetVisibility(bool visibility);
+  
+  // Virtual offset
+  void setVirtualOffset(double offset);
+  double getVirtualOffset();
+  
+ protected slots:
+   void onPathNodeModified();
+   void onTargetNodeModified();
+  
  private:
-  QList<qSlicerCompathTreeItem*> childItems;
+/*
+  QStringList childItems;
   QVector<QVariant> itemData;
-  qSlicerCompathTreeItem* parentItem;
-  Qt::CheckState checkState;
+  qSlicerCompathTreeRootItem* parentItem;
+*/
+  // MRML Nodes
   vtkMRMLAnnotationRulerNode* PathNode;
   vtkMRMLAnnotationRulerNode* VirtualOffsetNode;
   vtkMRMLAnnotationFiducialNode* TargetNode;
-  double offsetValue;
+
+  // Virtual offset
+  double OffsetValue;
 };
+
+//----------------------------------------------------------------------------
+void qSlicerCompathTreeItem::
+setVisibility(bool visibility)
+{
+  this->setPathVisibility(visibility);
+  this->setTargetVisibility(visibility);
+  this->setOffsetVisibility(visibility);
+}
+
+//----------------------------------------------------------------------------
+void qSlicerCompathTreeItem::
+setPathVisibility(bool visibility)
+{
+  if (this->PathNode)
+    {
+    this->PathNode->SetDisplayVisibility(visibility);
+    }
+}
+
+//----------------------------------------------------------------------------
+void qSlicerCompathTreeItem::
+setTargetVisibility(bool visibility)
+{
+  if (this->TargetNode)
+    {
+    this->TargetNode->SetDisplayVisibility(visibility);
+    }
+}
+
+//----------------------------------------------------------------------------
+void qSlicerCompathTreeItem::
+setOffsetVisibility(bool visibility)
+{
+  if (this->VirtualOffsetNode)
+    {
+    this->VirtualOffsetNode->SetDisplayVisibility(visibility);
+    }
+}
 
 #endif

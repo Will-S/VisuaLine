@@ -10,16 +10,19 @@ set(${KIT}_INCLUDE_DIRECTORIES
 set(${KIT}_SRCS
   qSlicer${MODULE_NAME}PathManagerWidget.cxx
   qSlicer${MODULE_NAME}PathManagerWidget.h
+#  qSlicer${MODULE_NAME}TreeRootItem.cxx
+#  qSlicer${MODULE_NAME}TreeRootItem.h
   qSlicer${MODULE_NAME}TreeItem.cxx
   qSlicer${MODULE_NAME}TreeItem.h
-  qSlicer${MODULE_NAME}TreeModel.cxx
-  qSlicer${MODULE_NAME}TreeModel.h
+#  qSlicer${MODULE_NAME}TreeModel.cxx
+#  qSlicer${MODULE_NAME}TreeModel.h
   )
 
 set(${KIT}_MOC_SRCS
   qSlicer${MODULE_NAME}PathManagerWidget.h
+#  qSlicer${MODULE_NAME}TreeRootItem.h
   qSlicer${MODULE_NAME}TreeItem.h
-  qSlicer${MODULE_NAME}TreeModel.h
+#  qSlicer${MODULE_NAME}TreeModel.h
   )
 
 set(${KIT}_UI_SRCS
