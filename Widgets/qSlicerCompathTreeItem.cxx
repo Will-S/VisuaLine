@@ -28,6 +28,7 @@ qSlicerCompathTreeItem
   this->TargetNode = NULL;
   this->VirtualOffsetNode = NULL;
   this->OffsetValue = 0;
+  this->PathItem = false;
 }
 
 // --------------------------------------------------------------------------
@@ -101,7 +102,7 @@ setVirtualOffsetNode(vtkMRMLAnnotationRulerNode* virtualTip)
   virtualTip->SetPosition2(p2);
   virtualTip->SetLocked(1);
   this->VirtualOffsetNode = virtualTip;
-  this->setOffsetVisibility(false);
+  this->setOffsetVisibility(true);
 }
 
 // --------------------------------------------------------------------------
@@ -113,52 +114,56 @@ getVirtualOffsetNode()
 
 // --------------------------------------------------------------------------
 void qSlicerCompathTreeItem::
-setVirtualOffset(double offset)
+setVirtualOffset(double offset, bool setByUser)
 {
-/*
-  if (this->offsetValue == offset)
+  if (!this->VirtualOffsetNode || !this->PathNode)
     {
     return;
     }
 
-  if (this->VirtualOffsetNode && this->PathNode)
+  // Do not update if modified by user but not visible
+  // TODO: When offset = 0, visibility turned off.
+  // If visibility turned off, offset not updated anymore.
+  // Need to find a workaround
+  if (setByUser && !this->VirtualOffsetNode->GetDisplayVisibility())
     {
-    // Only modify offset if ruler visible
-    if (this->VirtualOffsetNode->GetDisplayVisibility())
-      {
-      // Set points position
-      double p1[3], p2[3], p2minusp1[3];
-      this->PathNode->GetPosition1(p1);
-      this->PathNode->GetPosition2(p2);
-      vtkMath::Subtract(p2,p1,p2minusp1);
-      vtkMath::Normalize(p2minusp1);
-      
-      double offsetCoordinates[3];
-      offsetCoordinates[0] = p2[0] + p2minusp1[0]*offset;
-      offsetCoordinates[1] = p2[1] + p2minusp1[1]*offset;
-      offsetCoordinates[2] = p2[2] + p2minusp1[2]*offset;
-
-      this->VirtualOffsetNode->SetPosition1(p2);
-      this->VirtualOffsetNode->SetPosition2(offsetCoordinates);
-      this->offsetValue = offset;
-      this->VirtualOffsetNode->Modified();
-      }
+    return;
     }
-*/
+
+  // Set points position
+  double p1[3], p2[3], p2minusp1[3];
+  this->PathNode->GetPosition1(p1);
+  this->PathNode->GetPosition2(p2);
+  vtkMath::Subtract(p2,p1,p2minusp1);
+  vtkMath::Normalize(p2minusp1);
+  
+  double offsetCoordinates[3];
+  offsetCoordinates[0] = p2[0] + p2minusp1[0]*offset;
+  offsetCoordinates[1] = p2[1] + p2minusp1[1]*offset;
+  offsetCoordinates[2] = p2[2] + p2minusp1[2]*offset;
+  
+  this->VirtualOffsetNode->SetPosition1(p2);
+  this->VirtualOffsetNode->SetPosition2(offsetCoordinates);
+  this->OffsetValue = offset;
+
+  // Workaround for issue on top
+  //this->setOffsetVisibility(offset == 0 ? false : true);
+  this->VirtualOffsetNode->Modified();
 }
 
 // --------------------------------------------------------------------------
 double qSlicerCompathTreeItem::
 getVirtualOffset()
 {
+
 /*
-  if (this->VirtualOffsetNode)
-    {
-    std::cerr << "Offset for " << this->getPathNode()->GetName() << ": " << this->VirtualOffsetNode->GetDistanceMeasurement() << std::endl;
-    return this->VirtualOffsetNode->GetDistanceMeasurement();
-    }
-  std::cerr << "Fail" << std::endl;
-  return 0;
+ *  // bug with Annotation ruler. DistanceMeasurement always return 0
+ *
+ *  if (this->VirtualOffsetNode)
+ *   {
+ *   return this->VirtualOffsetNode->GetDistanceMeasurement();
+ *   }
+ *  return 0;
 */
   return this->OffsetValue;
 }
@@ -167,11 +172,63 @@ getVirtualOffset()
 void qSlicerCompathTreeItem::
 onPathNodeModified()
 {
+  if (!this->PathNode || !this->TargetNode)
+    {
+    return;
+    }
+
+  // Update target
+  double p2[3];
+  this->PathNode->GetPosition2(p2);
+  this->TargetNode->SetFiducialCoordinates(p2);
+  
+  // Update virtual offset
+  if (this->VirtualOffsetNode && this->OffsetValue != 0)
+    {
+    this->setVirtualOffset(this->OffsetValue, false);
+    }
 }
 
 // --------------------------------------------------------------------------
 void qSlicerCompathTreeItem::
 onTargetNodeModified()
 {
+  if (!this->TargetNode || !this->PathNode)
+    {
+    return;
+    }
+
+  double* targetPosition;
+  targetPosition = this->TargetNode->GetFiducialCoordinates();
+
+  // Modify ruler target point
+  this->PathNode->SetPosition2(targetPosition);
+
+  // Update text
+  std::stringstream targetStream;
+  targetStream.precision(2);
+  targetStream.setf(std::ios::fixed);
+  targetStream << "Target (R: " << targetPosition[0]
+               << ", A: " << targetPosition[1]
+               << ", S: " << targetPosition[2]
+               << ")";
+  QString targetString = QString(targetStream.str().c_str());
+
+  // Get last child
+  if (this->hasChildren())
+    {
+    qSlicerCompathTreeItem* targetItem
+      = dynamic_cast<qSlicerCompathTreeItem*>(this->child(this->rowCount()-1));
+    if (targetItem && !targetItem->isPathItem())
+      {
+      targetItem->setData(targetString, Qt::DisplayRole);
+      }
+    }
+
+  // Update virtual offset
+  if (this->VirtualOffsetNode && this->OffsetValue != 0)
+    {
+    this->setVirtualOffset(this->OffsetValue, false);
+    }
 }
 

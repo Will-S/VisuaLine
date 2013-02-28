@@ -24,6 +24,7 @@
 // Qt includes
 #include <QCheckBox>
 #include <QModelIndex>
+#include <QStandardItem>
 
 #include <ctkVTKObject.h>
 // PathManager Widgets includes
@@ -55,6 +56,7 @@ protected slots:
   void onClearButtonClicked();
   void onRowSelected(const QModelIndex& index);
   void onVirtualOffsetChanged(double newOffset);
+  void onItemChanged(QStandardItem*);
   void populateTreeView();
 
 protected:

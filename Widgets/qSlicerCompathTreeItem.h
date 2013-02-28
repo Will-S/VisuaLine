@@ -21,6 +21,9 @@
 #ifndef __qSlicerCompathTreeItem_h
 #define __qSlicerCompathTreeItem_h
 
+// Standards
+#include <sstream>
+
 // Qt includes
 #include <QStandardItem>
 
@@ -67,9 +70,11 @@ class qSlicerCompathTreeItem : public QObject, public QStandardItem
   inline void setPathVisibility(bool visibility);
   inline void setTargetVisibility(bool visibility);
   inline void setOffsetVisibility(bool visibility);
-  
+  inline void setPathItem(bool isPath);
+  inline bool isPathItem();
+
   // Virtual offset
-  void setVirtualOffset(double offset);
+  void setVirtualOffset(double offset, bool setByUser);
   double getVirtualOffset();
   
  protected slots:
@@ -89,6 +94,9 @@ class qSlicerCompathTreeItem : public QObject, public QStandardItem
 
   // Virtual offset
   double OffsetValue;
+
+  // Differentiation between target and path
+  bool PathItem;
 };
 
 //----------------------------------------------------------------------------
@@ -128,6 +136,20 @@ setOffsetVisibility(bool visibility)
     {
     this->VirtualOffsetNode->SetDisplayVisibility(visibility);
     }
+}
+
+//----------------------------------------------------------------------------
+void qSlicerCompathTreeItem::
+setPathItem(bool isPath)
+{
+  this->PathItem = isPath;
+}
+
+//----------------------------------------------------------------------------
+bool qSlicerCompathTreeItem::
+isPathItem()
+{
+  return this->PathItem;
 }
 
 #endif
