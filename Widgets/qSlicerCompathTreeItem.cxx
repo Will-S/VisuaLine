@@ -130,6 +130,10 @@ setVirtualOffset(double offset, bool setByUser)
     return;
     }
 
+  // TODO:
+  // if (!this->VirtualOffsetNode->GetDisplayVisibility() && offset != this->OffsetValue)
+  //    turn on visibility
+
   // Set points position
   double p1[3], p2[3], p2minusp1[3];
   this->PathNode->GetPosition1(p1);
