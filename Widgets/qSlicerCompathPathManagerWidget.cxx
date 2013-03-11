@@ -314,7 +314,7 @@ void qSlicerCompathPathManagerWidget
       virtualTip->Initialize(this->mrmlScene());
       item->setVirtualOffsetNode(virtualTip);
       }
-    item->setVirtualOffset(newOffset, true);
+    item->setVirtualOffset(newOffset);
     }
 }
 

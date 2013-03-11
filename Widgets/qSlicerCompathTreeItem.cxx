@@ -114,25 +114,12 @@ getVirtualOffsetNode()
 
 // --------------------------------------------------------------------------
 void qSlicerCompathTreeItem::
-setVirtualOffset(double offset, bool setByUser)
+setVirtualOffset(double offset)
 {
   if (!this->VirtualOffsetNode || !this->PathNode)
     {
     return;
     }
-
-  // Do not update if modified by user but not visible
-  // TODO: When offset = 0, visibility turned off.
-  // If visibility turned off, offset not updated anymore.
-  // Need to find a workaround
-  if (setByUser && !this->VirtualOffsetNode->GetDisplayVisibility())
-    {
-    return;
-    }
-
-  // TODO:
-  // if (!this->VirtualOffsetNode->GetDisplayVisibility() && offset != this->OffsetValue)
-  //    turn on visibility
 
   // Set points position
   double p1[3], p2[3], p2minusp1[3];
@@ -151,7 +138,7 @@ setVirtualOffset(double offset, bool setByUser)
   this->OffsetValue = offset;
 
   // Workaround for issue on top
-  //this->setOffsetVisibility(offset == 0 ? false : true);
+  this->setOffsetVisibility(offset == 0 ? false : true);
   this->VirtualOffsetNode->Modified();
 }
 
@@ -189,7 +176,7 @@ onPathNodeModified()
   // Update virtual offset
   if (this->VirtualOffsetNode && this->OffsetValue != 0)
     {
-    this->setVirtualOffset(this->OffsetValue, false);
+    this->setVirtualOffset(this->OffsetValue);
     }
 }
 
@@ -232,7 +219,7 @@ onTargetNodeModified()
   // Update virtual offset
   if (this->VirtualOffsetNode && this->OffsetValue != 0)
     {
-    this->setVirtualOffset(this->OffsetValue, false);
+    this->setVirtualOffset(this->OffsetValue);
     }
 }
 

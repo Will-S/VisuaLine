@@ -74,7 +74,7 @@ class qSlicerCompathTreeItem : public QObject, public QStandardItem
   inline bool isPathItem();
 
   // Virtual offset
-  void setVirtualOffset(double offset, bool setByUser);
+  void setVirtualOffset(double offset);
   double getVirtualOffset();
   
  protected slots:
