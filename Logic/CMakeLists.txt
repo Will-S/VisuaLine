@@ -13,7 +13,7 @@ set(${KIT}_SRCS
   )
 
 set(${KIT}_TARGET_LIBRARIES
-  vtkSlicerCompathModuleMRML
+  vtkSlicerVisuaLineModuleMRML
   ${ITK_LIBRARIES}
   )
 

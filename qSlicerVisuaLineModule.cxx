@@ -24,63 +24,63 @@
 // Qt includes
 #include <QtPlugin>
 
-// Compath Logic includes
-#include <vtkSlicerCompathLogic.h>
+// VisuaLine Logic includes
+#include <vtkSlicerVisuaLineLogic.h>
 
-// Compath includes
-#include "qSlicerCompathModule.h"
-#include "qSlicerCompathModuleWidget.h"
+// VisuaLine includes
+#include "qSlicerVisuaLineModule.h"
+#include "qSlicerVisuaLineModuleWidget.h"
 
 //-----------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(qSlicerCompathModule, qSlicerCompathModule);
+Q_EXPORT_PLUGIN2(qSlicerVisuaLineModule, qSlicerVisuaLineModule);
 
 //-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_ExtensionTemplate
-class qSlicerCompathModulePrivate
+class qSlicerVisuaLineModulePrivate
 {
 public:
-  qSlicerCompathModulePrivate();
+  qSlicerVisuaLineModulePrivate();
 };
 
 //-----------------------------------------------------------------------------
-// qSlicerCompathModulePrivate methods
+// qSlicerVisuaLineModulePrivate methods
 
 //-----------------------------------------------------------------------------
-qSlicerCompathModulePrivate
-::qSlicerCompathModulePrivate()
+qSlicerVisuaLineModulePrivate
+::qSlicerVisuaLineModulePrivate()
 {
 }
 
 //-----------------------------------------------------------------------------
-// qSlicerCompathModule methods
+// qSlicerVisuaLineModule methods
 
 //-----------------------------------------------------------------------------
-qSlicerCompathModule
-::qSlicerCompathModule(QObject* _parent)
+qSlicerVisuaLineModule
+::qSlicerVisuaLineModule(QObject* _parent)
   : Superclass(_parent)
-  , d_ptr(new qSlicerCompathModulePrivate)
+  , d_ptr(new qSlicerVisuaLineModulePrivate)
 {
 }
 
 //-----------------------------------------------------------------------------
-qSlicerCompathModule::~qSlicerCompathModule()
+qSlicerVisuaLineModule::~qSlicerVisuaLineModule()
 {
 }
 
 //-----------------------------------------------------------------------------
-QString qSlicerCompathModule::helpText()const
+QString qSlicerVisuaLineModule::helpText()const
 {
   return "This is a loadable module bundled in an extension";
 }
 
 //-----------------------------------------------------------------------------
-QString qSlicerCompathModule::acknowledgementText()const
+QString qSlicerVisuaLineModule::acknowledgementText()const
 {
   return "This work was was partially funded by NIH grant 3P41RR013218-12S1";
 }
 
 //-----------------------------------------------------------------------------
-QStringList qSlicerCompathModule::contributors()const
+QStringList qSlicerVisuaLineModule::contributors()const
 {
   QStringList moduleContributors;
   moduleContributors << QString("Laurent Chauvin (BWH)");
@@ -88,38 +88,38 @@ QStringList qSlicerCompathModule::contributors()const
 }
 
 //-----------------------------------------------------------------------------
-QIcon qSlicerCompathModule::icon()const
+QIcon qSlicerVisuaLineModule::icon()const
 {
-  return QIcon(":/Icons/Compath.png");
+  return QIcon(":/Icons/VisuaLine.png");
 }
 
 //-----------------------------------------------------------------------------
-QStringList qSlicerCompathModule::categories() const
+QStringList qSlicerVisuaLineModule::categories() const
 {
   return QStringList() << "IGT";
 }
 
 //-----------------------------------------------------------------------------
-QStringList qSlicerCompathModule::dependencies() const
+QStringList qSlicerVisuaLineModule::dependencies() const
 {
   return QStringList() << "Annotations";
 }
 
 //-----------------------------------------------------------------------------
-void qSlicerCompathModule::setup()
+void qSlicerVisuaLineModule::setup()
 {
   this->Superclass::setup();
 }
 
 //-----------------------------------------------------------------------------
-qSlicerAbstractModuleRepresentation * qSlicerCompathModule
+qSlicerAbstractModuleRepresentation * qSlicerVisuaLineModule
 ::createWidgetRepresentation()
 {
-  return new qSlicerCompathModuleWidget;
+  return new qSlicerVisuaLineModuleWidget;
 }
 
 //-----------------------------------------------------------------------------
-vtkMRMLAbstractLogic* qSlicerCompathModule::createLogic()
+vtkMRMLAbstractLogic* qSlicerVisuaLineModule::createLogic()
 {
-  return vtkSlicerCompathLogic::New();
+  return vtkSlicerVisuaLineLogic::New();
 }

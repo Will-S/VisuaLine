@@ -25,44 +25,44 @@
 #include <QDebug>
 
 // SlicerQt includes
-#include "qSlicerCompathModuleWidget.h"
-#include "ui_qSlicerCompathModuleWidget.h"
+#include "qSlicerVisuaLineModuleWidget.h"
+#include "ui_qSlicerVisuaLineModuleWidget.h"
 
 //-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_ExtensionTemplate
-class qSlicerCompathModuleWidgetPrivate: public Ui_qSlicerCompathModuleWidget
+class qSlicerVisuaLineModuleWidgetPrivate: public Ui_qSlicerVisuaLineModuleWidget
 {
 public:
-  qSlicerCompathModuleWidgetPrivate();
+  qSlicerVisuaLineModuleWidgetPrivate();
 };
 
 //-----------------------------------------------------------------------------
-// qSlicerCompathModuleWidgetPrivate methods
+// qSlicerVisuaLineModuleWidgetPrivate methods
 
 //-----------------------------------------------------------------------------
-qSlicerCompathModuleWidgetPrivate::qSlicerCompathModuleWidgetPrivate()
+qSlicerVisuaLineModuleWidgetPrivate::qSlicerVisuaLineModuleWidgetPrivate()
 {
 }
 
 //-----------------------------------------------------------------------------
-// qSlicerCompathModuleWidget methods
+// qSlicerVisuaLineModuleWidget methods
 
 //-----------------------------------------------------------------------------
-qSlicerCompathModuleWidget::qSlicerCompathModuleWidget(QWidget* _parent)
+qSlicerVisuaLineModuleWidget::qSlicerVisuaLineModuleWidget(QWidget* _parent)
   : Superclass( _parent )
-  , d_ptr( new qSlicerCompathModuleWidgetPrivate )
+  , d_ptr( new qSlicerVisuaLineModuleWidgetPrivate )
 {
 }
 
 //-----------------------------------------------------------------------------
-qSlicerCompathModuleWidget::~qSlicerCompathModuleWidget()
+qSlicerVisuaLineModuleWidget::~qSlicerVisuaLineModuleWidget()
 {
 }
 
 //-----------------------------------------------------------------------------
-void qSlicerCompathModuleWidget::setup()
+void qSlicerVisuaLineModuleWidget::setup()
 {
-  Q_D(qSlicerCompathModuleWidget);
+  Q_D(qSlicerVisuaLineModuleWidget);
   d->setupUi(this);
   this->Superclass::setup();
 }

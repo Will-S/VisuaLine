@@ -1,7 +1,7 @@
 #ifndef __vtkMRMLNITNode_h
 #define __vtkMRMLNITNode_h
 
-#include "vtkSlicerCompathModuleMRMLExport.h"
+#include "vtkSlicerVisuaLineModuleMRMLExport.h"
 #include "vtkMRMLAnnotationHierarchyNode.h" 
 
 class vtkMRMLNode;

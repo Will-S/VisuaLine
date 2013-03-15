@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>qSlicerCompathModuleWidget</class>
- <widget class="qSlicerWidget" name="qSlicerCompathModuleWidget">
+ <class>qSlicerVisuaLineModuleWidget</class>
+ <widget class="qSlicerWidget" name="qSlicerVisuaLineModuleWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="qSlicerCompathPathManagerWidget" name="PathManager" native="true"/>
+    <widget class="qSlicerVisuaLinePathManagerWidget" name="PathManager" native="true"/>
    </item>
    <item>
     <spacer name="verticalSpacer">
@@ -40,9 +40,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>qSlicerCompathPathManagerWidget</class>
+   <class>qSlicerVisuaLinePathManagerWidget</class>
    <extends>QWidget</extends>
-   <header>qSlicerCompathPathManagerWidget.h</header>
+   <header>qSlicerVisuaLinePathManagerWidget.h</header>
    <container>1</container>
    <slots>
     <slot>setMRMLScene(vtkMRMLScene*)</slot>
@@ -52,7 +52,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>qSlicerCompathModuleWidget</sender>
+   <sender>qSlicerVisuaLineModuleWidget</sender>
    <signal>mrmlSceneChanged(vtkMRMLScene*)</signal>
    <receiver>PathManager</receiver>
    <slot>setMRMLScene(vtkMRMLScene*)</slot>

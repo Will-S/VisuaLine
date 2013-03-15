@@ -18,8 +18,8 @@
 
 ==============================================================================*/
 
-#ifndef __qSlicerCompathTreeItem_h
-#define __qSlicerCompathTreeItem_h
+#ifndef __qSlicerVisuaLineTreeItem_h
+#define __qSlicerVisuaLineTreeItem_h
 
 // Standards
 #include <sstream>
@@ -38,18 +38,18 @@
 #include "vtkMath.h"
 #include <ctkVTKObject.h>
 
-class qSlicerCompathTreeRootItem;
-class qSlicerCompathTreeItem : public QObject, public QStandardItem
+class qSlicerVisuaLineTreeRootItem;
+class qSlicerVisuaLineTreeItem : public QObject, public QStandardItem
 {
   Q_OBJECT
   QVTK_OBJECT
  public:
-    qSlicerCompathTreeItem(const QString& text);
-  ~qSlicerCompathTreeItem();
+    qSlicerVisuaLineTreeItem(const QString& text);
+  ~qSlicerVisuaLineTreeItem();
   
   // Qt Tree Items
 /*
-  qSlicerCompathTreeItem* parent();
+  qSlicerVisuaLineTreeItem* parent();
   void appendChild(QString child);  
   QString child(int row);
   int childCount() const;
@@ -85,7 +85,7 @@ class qSlicerCompathTreeItem : public QObject, public QStandardItem
 /*
   QStringList childItems;
   QVector<QVariant> itemData;
-  qSlicerCompathTreeRootItem* parentItem;
+  qSlicerVisuaLineTreeRootItem* parentItem;
 */
   // MRML Nodes
   vtkMRMLAnnotationRulerNode* PathNode;
@@ -100,7 +100,7 @@ class qSlicerCompathTreeItem : public QObject, public QStandardItem
 };
 
 //----------------------------------------------------------------------------
-void qSlicerCompathTreeItem::
+void qSlicerVisuaLineTreeItem::
 setVisibility(bool visibility)
 {
   this->setPathVisibility(visibility);
@@ -109,7 +109,7 @@ setVisibility(bool visibility)
 }
 
 //----------------------------------------------------------------------------
-void qSlicerCompathTreeItem::
+void qSlicerVisuaLineTreeItem::
 setPathVisibility(bool visibility)
 {
   if (this->PathNode)
@@ -119,7 +119,7 @@ setPathVisibility(bool visibility)
 }
 
 //----------------------------------------------------------------------------
-void qSlicerCompathTreeItem::
+void qSlicerVisuaLineTreeItem::
 setTargetVisibility(bool visibility)
 {
   if (this->TargetNode)
@@ -129,7 +129,7 @@ setTargetVisibility(bool visibility)
 }
 
 //----------------------------------------------------------------------------
-void qSlicerCompathTreeItem::
+void qSlicerVisuaLineTreeItem::
 setOffsetVisibility(bool visibility)
 {
   if (this->VirtualOffsetNode)
@@ -139,14 +139,14 @@ setOffsetVisibility(bool visibility)
 }
 
 //----------------------------------------------------------------------------
-void qSlicerCompathTreeItem::
+void qSlicerVisuaLineTreeItem::
 setPathItem(bool isPath)
 {
   this->PathItem = isPath;
 }
 
 //----------------------------------------------------------------------------
-bool qSlicerCompathTreeItem::
+bool qSlicerVisuaLineTreeItem::
 isPathItem()
 {
   return this->PathItem;

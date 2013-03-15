@@ -21,19 +21,19 @@
 
 ==============================================================================*/
 
-#ifndef __qSlicerCompathModule_h
-#define __qSlicerCompathModule_h
+#ifndef __qSlicerVisuaLineModule_h
+#define __qSlicerVisuaLineModule_h
 
 // SlicerQt includes
 #include "qSlicerLoadableModule.h"
 
-#include "qSlicerCompathModuleExport.h"
+#include "qSlicerVisuaLineModuleExport.h"
 
-class qSlicerCompathModulePrivate;
+class qSlicerVisuaLineModulePrivate;
 
 /// \ingroup Slicer_QtModules_ExtensionTemplate
-class Q_SLICER_QTMODULES_COMPATH_EXPORT
-qSlicerCompathModule
+class Q_SLICER_QTMODULES_VISUALINE_EXPORT
+qSlicerVisuaLineModule
   : public qSlicerLoadableModule
 {
   Q_OBJECT
@@ -42,8 +42,8 @@ qSlicerCompathModule
 public:
 
   typedef qSlicerLoadableModule Superclass;
-  explicit qSlicerCompathModule(QObject *parent=0);
-  virtual ~qSlicerCompathModule();
+  explicit qSlicerVisuaLineModule(QObject *parent=0);
+  virtual ~qSlicerVisuaLineModule();
 
   qSlicerGetTitleMacro(QTMODULE_TITLE);
 
@@ -68,11 +68,11 @@ protected:
   virtual vtkMRMLAbstractLogic* createLogic();
 
 protected:
-  QScopedPointer<qSlicerCompathModulePrivate> d_ptr;
+  QScopedPointer<qSlicerVisuaLineModulePrivate> d_ptr;
 
 private:
-  Q_DECLARE_PRIVATE(qSlicerCompathModule);
-  Q_DISABLE_COPY(qSlicerCompathModule);
+  Q_DECLARE_PRIVATE(qSlicerVisuaLineModule);
+  Q_DISABLE_COPY(qSlicerVisuaLineModule);
 
 };
 

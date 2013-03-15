@@ -15,8 +15,8 @@
 
 ==============================================================================*/
 
-// Compath Logic includes
-#include "vtkSlicerCompathLogic.h"
+// VisuaLine Logic includes
+#include "vtkSlicerVisuaLineLogic.h"
 
 // MRML includes
 #include "vtkMRMLNITNode.h"
@@ -28,26 +28,26 @@
 #include <cassert>
 
 //----------------------------------------------------------------------------
-vtkStandardNewMacro(vtkSlicerCompathLogic);
+vtkStandardNewMacro(vtkSlicerVisuaLineLogic);
 
 //----------------------------------------------------------------------------
-vtkSlicerCompathLogic::vtkSlicerCompathLogic()
+vtkSlicerVisuaLineLogic::vtkSlicerVisuaLineLogic()
 {
 }
 
 //----------------------------------------------------------------------------
-vtkSlicerCompathLogic::~vtkSlicerCompathLogic()
+vtkSlicerVisuaLineLogic::~vtkSlicerVisuaLineLogic()
 {
 }
 
 //----------------------------------------------------------------------------
-void vtkSlicerCompathLogic::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSlicerVisuaLineLogic::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
 
 //---------------------------------------------------------------------------
-void vtkSlicerCompathLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
+void vtkSlicerVisuaLineLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 {
   vtkNew<vtkIntArray> events;
   events->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
@@ -57,7 +57,7 @@ void vtkSlicerCompathLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 }
 
 //-----------------------------------------------------------------------------
-void vtkSlicerCompathLogic::RegisterNodes()
+void vtkSlicerVisuaLineLogic::RegisterNodes()
 {
   assert(this->GetMRMLScene() != 0);
 
@@ -67,19 +67,19 @@ void vtkSlicerCompathLogic::RegisterNodes()
 }
 
 //---------------------------------------------------------------------------
-void vtkSlicerCompathLogic::UpdateFromMRMLScene()
+void vtkSlicerVisuaLineLogic::UpdateFromMRMLScene()
 {
   assert(this->GetMRMLScene() != 0);
 }
 
 //---------------------------------------------------------------------------
-void vtkSlicerCompathLogic
+void vtkSlicerVisuaLineLogic
 ::OnMRMLSceneNodeAdded(vtkMRMLNode* vtkNotUsed(node))
 {
 }
 
 //---------------------------------------------------------------------------
-void vtkSlicerCompathLogic
+void vtkSlicerVisuaLineLogic
 ::OnMRMLSceneNodeRemoved(vtkMRMLNode* vtkNotUsed(node))
 {
 }

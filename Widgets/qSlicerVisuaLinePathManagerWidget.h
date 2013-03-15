@@ -18,8 +18,8 @@
 
 ==============================================================================*/
 
-#ifndef __qSlicerCompathPathManagerWidget_h
-#define __qSlicerCompathPathManagerWidget_h
+#ifndef __qSlicerVisuaLinePathManagerWidget_h
+#define __qSlicerVisuaLinePathManagerWidget_h
 
 // Qt includes
 #include <QCheckBox>
@@ -28,25 +28,25 @@
 
 #include <ctkVTKObject.h>
 // PathManager Widgets includes
-#include "qSlicerCompathModuleWidgetsExport.h"
+#include "qSlicerVisuaLineModuleWidgetsExport.h"
 
 #include "qSlicerWidget.h"
 
-class qSlicerCompathPathManagerWidgetPrivate;
-//class qSlicerCompathTreeItem;
+class qSlicerVisuaLinePathManagerWidgetPrivate;
+//class qSlicerVisuaLineTreeItem;
 class vtkMRMLScene;
 class vtkMRMLNode;
 
-/// \ingroup Slicer_QtModules_Compath
-class Q_SLICER_MODULE_COMPATH_WIDGETS_EXPORT qSlicerCompathPathManagerWidget
+/// \ingroup Slicer_QtModules_VisuaLine
+class Q_SLICER_MODULE_VISUALINE_WIDGETS_EXPORT qSlicerVisuaLinePathManagerWidget
   : public qSlicerWidget
 {
   Q_OBJECT
   QVTK_OBJECT
 public:
   typedef qSlicerWidget Superclass;
-  qSlicerCompathPathManagerWidget(QWidget *parent=0);
-  virtual ~qSlicerCompathPathManagerWidget();
+  qSlicerVisuaLinePathManagerWidget(QWidget *parent=0);
+  virtual ~qSlicerVisuaLinePathManagerWidget();
 
 public slots:
 
@@ -60,11 +60,11 @@ protected slots:
   void populateTreeView();
 
 protected:
-  QScopedPointer<qSlicerCompathPathManagerWidgetPrivate> d_ptr;
+  QScopedPointer<qSlicerVisuaLinePathManagerWidgetPrivate> d_ptr;
 
 private:
-  Q_DECLARE_PRIVATE(qSlicerCompathPathManagerWidget);
-  Q_DISABLE_COPY(qSlicerCompathPathManagerWidget);
+  Q_DECLARE_PRIVATE(qSlicerVisuaLinePathManagerWidget);
+  Q_DISABLE_COPY(qSlicerVisuaLinePathManagerWidget);
 };
 
 #endif

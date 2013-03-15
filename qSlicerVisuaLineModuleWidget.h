@@ -21,19 +21,19 @@
 
 ==============================================================================*/
 
-#ifndef __qSlicerCompathModuleWidget_h
-#define __qSlicerCompathModuleWidget_h
+#ifndef __qSlicerVisuaLineModuleWidget_h
+#define __qSlicerVisuaLineModuleWidget_h
 
 // SlicerQt includes
 #include "qSlicerAbstractModuleWidget.h"
 
-#include "qSlicerCompathModuleExport.h"
+#include "qSlicerVisuaLineModuleExport.h"
 
-class qSlicerCompathModuleWidgetPrivate;
+class qSlicerVisuaLineModuleWidgetPrivate;
 class vtkMRMLNode;
 
 /// \ingroup Slicer_QtModules_ExtensionTemplate
-class Q_SLICER_QTMODULES_COMPATH_EXPORT qSlicerCompathModuleWidget :
+class Q_SLICER_QTMODULES_VISUALINE_EXPORT qSlicerVisuaLineModuleWidget :
   public qSlicerAbstractModuleWidget
 {
   Q_OBJECT
@@ -41,20 +41,20 @@ class Q_SLICER_QTMODULES_COMPATH_EXPORT qSlicerCompathModuleWidget :
 public:
 
   typedef qSlicerAbstractModuleWidget Superclass;
-  qSlicerCompathModuleWidget(QWidget *parent=0);
-  virtual ~qSlicerCompathModuleWidget();
+  qSlicerVisuaLineModuleWidget(QWidget *parent=0);
+  virtual ~qSlicerVisuaLineModuleWidget();
 
 public slots:
 
 
 protected:
-  QScopedPointer<qSlicerCompathModuleWidgetPrivate> d_ptr;
+  QScopedPointer<qSlicerVisuaLineModuleWidgetPrivate> d_ptr;
   
   virtual void setup();
 
 private:
-  Q_DECLARE_PRIVATE(qSlicerCompathModuleWidget);
-  Q_DISABLE_COPY(qSlicerCompathModuleWidget);
+  Q_DECLARE_PRIVATE(qSlicerVisuaLineModuleWidget);
+  Q_DISABLE_COPY(qSlicerVisuaLineModuleWidget);
 };
 
 #endif

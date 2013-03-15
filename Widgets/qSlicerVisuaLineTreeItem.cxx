@@ -18,11 +18,11 @@
 
 ==============================================================================*/
 
-#include "qSlicerCompathTreeItem.h"
+#include "qSlicerVisuaLineTreeItem.h"
 
 // --------------------------------------------------------------------------
-qSlicerCompathTreeItem
-::qSlicerCompathTreeItem(const QString& text) : QStandardItem(text)
+qSlicerVisuaLineTreeItem
+::qSlicerVisuaLineTreeItem(const QString& text) : QStandardItem(text)
 {
   this->PathNode = NULL;
   this->TargetNode = NULL;
@@ -32,14 +32,14 @@ qSlicerCompathTreeItem
 }
 
 // --------------------------------------------------------------------------
-qSlicerCompathTreeItem::
-~qSlicerCompathTreeItem()
+qSlicerVisuaLineTreeItem::
+~qSlicerVisuaLineTreeItem()
 {
   this->setVisibility(false);
 }
 
 // --------------------------------------------------------------------------
-void qSlicerCompathTreeItem::
+void qSlicerVisuaLineTreeItem::
 setPathNode(vtkMRMLAnnotationRulerNode* rulerNode)
 {
   if (rulerNode)
@@ -51,14 +51,14 @@ setPathNode(vtkMRMLAnnotationRulerNode* rulerNode)
 }
 
 // --------------------------------------------------------------------------
-vtkMRMLAnnotationRulerNode* qSlicerCompathTreeItem::
+vtkMRMLAnnotationRulerNode* qSlicerVisuaLineTreeItem::
 getPathNode()
 {
   return this->PathNode;
 }
 
 // --------------------------------------------------------------------------
-void qSlicerCompathTreeItem::
+void qSlicerVisuaLineTreeItem::
 setTargetNode(vtkMRMLAnnotationFiducialNode* fiducialNode)
 {
   if (fiducialNode)
@@ -70,14 +70,14 @@ setTargetNode(vtkMRMLAnnotationFiducialNode* fiducialNode)
 }
 
 // --------------------------------------------------------------------------
-vtkMRMLAnnotationFiducialNode* qSlicerCompathTreeItem::
+vtkMRMLAnnotationFiducialNode* qSlicerVisuaLineTreeItem::
 getTargetNode()
 {
   return this->TargetNode;
 }
 
 // --------------------------------------------------------------------------
-void qSlicerCompathTreeItem::
+void qSlicerVisuaLineTreeItem::
 setVirtualOffsetNode(vtkMRMLAnnotationRulerNode* virtualTip)
 {
   if (!virtualTip || !this->PathNode)
@@ -106,14 +106,14 @@ setVirtualOffsetNode(vtkMRMLAnnotationRulerNode* virtualTip)
 }
 
 // --------------------------------------------------------------------------
-vtkMRMLAnnotationRulerNode* qSlicerCompathTreeItem::
+vtkMRMLAnnotationRulerNode* qSlicerVisuaLineTreeItem::
 getVirtualOffsetNode()
 {
   return this->VirtualOffsetNode;
 }
 
 // --------------------------------------------------------------------------
-void qSlicerCompathTreeItem::
+void qSlicerVisuaLineTreeItem::
 setVirtualOffset(double offset)
 {
   if (!this->VirtualOffsetNode || !this->PathNode)
@@ -143,7 +143,7 @@ setVirtualOffset(double offset)
 }
 
 // --------------------------------------------------------------------------
-double qSlicerCompathTreeItem::
+double qSlicerVisuaLineTreeItem::
 getVirtualOffset()
 {
 
@@ -160,7 +160,7 @@ getVirtualOffset()
 }
 
 // --------------------------------------------------------------------------
-void qSlicerCompathTreeItem::
+void qSlicerVisuaLineTreeItem::
 onPathNodeModified()
 {
   if (!this->PathNode || !this->TargetNode)
@@ -181,7 +181,7 @@ onPathNodeModified()
 }
 
 // --------------------------------------------------------------------------
-void qSlicerCompathTreeItem::
+void qSlicerVisuaLineTreeItem::
 onTargetNodeModified()
 {
   if (!this->TargetNode || !this->PathNode)
@@ -208,8 +208,8 @@ onTargetNodeModified()
   // Get last child
   if (this->hasChildren())
     {
-    qSlicerCompathTreeItem* targetItem
-      = dynamic_cast<qSlicerCompathTreeItem*>(this->child(this->rowCount()-1));
+    qSlicerVisuaLineTreeItem* targetItem
+      = dynamic_cast<qSlicerVisuaLineTreeItem*>(this->child(this->rowCount()-1));
     if (targetItem && !targetItem->isPathItem())
       {
       targetItem->setData(targetString, Qt::DisplayRole);

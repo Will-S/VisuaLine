@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>qSlicerCompathPathManagerWidget</class>
- <widget class="qSlicerWidget" name="qSlicerCompathPathManagerWidget">
+ <class>qSlicerVisuaLinePathManagerWidget</class>
+ <widget class="qSlicerWidget" name="qSlicerVisuaLinePathManagerWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>qSlicerCompathPathManagerWidget</string>
+   <string>qSlicerVisuaLinePathManagerWidget</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -223,7 +223,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>qSlicerCompathPathManagerWidget</sender>
+   <sender>qSlicerVisuaLinePathManagerWidget</sender>
    <signal>mrmlSceneChanged(vtkMRMLScene*)</signal>
    <receiver>HierarchySelectorWidget</receiver>
    <slot>setMRMLScene(vtkMRMLScene*)</slot>

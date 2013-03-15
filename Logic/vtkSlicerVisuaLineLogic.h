@@ -15,14 +15,14 @@
 
 ==============================================================================*/
 
-// .NAME vtkSlicerCompathLogic - slicer logic class for volumes manipulation
+// .NAME vtkSlicerVisuaLineLogic - slicer logic class for volumes manipulation
 // .SECTION Description
 // This class manages the logic associated with reading, saving,
 // and changing propertied of the volumes
 
 
-#ifndef __vtkSlicerCompathLogic_h
-#define __vtkSlicerCompathLogic_h
+#ifndef __vtkSlicerVisuaLineLogic_h
+#define __vtkSlicerVisuaLineLogic_h
 
 // Slicer includes
 #include "vtkSlicerModuleLogic.h"
@@ -32,22 +32,22 @@
 // STD includes
 #include <cstdlib>
 
-#include "vtkSlicerCompathModuleLogicExport.h"
+#include "vtkSlicerVisuaLineModuleLogicExport.h"
 
 
 /// \ingroup Slicer_QtModules_ExtensionTemplate
-class VTK_SLICER_COMPATH_MODULE_LOGIC_EXPORT vtkSlicerCompathLogic :
+class VTK_SLICER_VISUALINE_MODULE_LOGIC_EXPORT vtkSlicerVisuaLineLogic :
   public vtkSlicerModuleLogic
 {
 public:
 
-  static vtkSlicerCompathLogic *New();
-  vtkTypeMacro(vtkSlicerCompathLogic, vtkSlicerModuleLogic);
+  static vtkSlicerVisuaLineLogic *New();
+  vtkTypeMacro(vtkSlicerVisuaLineLogic, vtkSlicerModuleLogic);
   void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
-  vtkSlicerCompathLogic();
-  virtual ~vtkSlicerCompathLogic();
+  vtkSlicerVisuaLineLogic();
+  virtual ~vtkSlicerVisuaLineLogic();
 
   virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene);
   /// Register MRML Node classes to Scene. Gets called automatically when the MRMLScene is attached to this logic class.
@@ -57,8 +57,8 @@ protected:
   virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* node);
 private:
 
-  vtkSlicerCompathLogic(const vtkSlicerCompathLogic&); // Not implemented
-  void operator=(const vtkSlicerCompathLogic&);               // Not implemented
+  vtkSlicerVisuaLineLogic(const vtkSlicerVisuaLineLogic&); // Not implemented
+  void operator=(const vtkSlicerVisuaLineLogic&);               // Not implemented
 };
 
 #endif

@@ -22,12 +22,12 @@
 #include <vector>
 #include <iomanip>
 
-//#include "qSlicerCompathTreeModel.h"
+//#include "qSlicerVisuaLineTreeModel.h"
 
 // PathManager Widgets includes
-#include "qSlicerCompathPathManagerWidget.h"
-#include "ui_qSlicerCompathPathManagerWidget.h"
-#include "qSlicerCompathTreeItem.h"
+#include "qSlicerVisuaLinePathManagerWidget.h"
+#include "ui_qSlicerVisuaLinePathManagerWidget.h"
+#include "qSlicerVisuaLineTreeItem.h"
 
 #include <vtkMRMLAnnotationFiducialNode.h>
 #include <vtkMRMLAnnotationHierarchyNode.h>
@@ -38,18 +38,18 @@
 #include <vtkMRMLScene.h>
 
 //-----------------------------------------------------------------------------
-/// \ingroup Slicer_QtModules_Compath
-class qSlicerCompathPathManagerWidgetPrivate
-  : public Ui_qSlicerCompathPathManagerWidget
+/// \ingroup Slicer_QtModules_VisuaLine
+class qSlicerVisuaLinePathManagerWidgetPrivate
+  : public Ui_qSlicerVisuaLinePathManagerWidget
 {
-  Q_DECLARE_PUBLIC(qSlicerCompathPathManagerWidget);
+  Q_DECLARE_PUBLIC(qSlicerVisuaLinePathManagerWidget);
 protected:
-  qSlicerCompathPathManagerWidget* const q_ptr;
+  qSlicerVisuaLinePathManagerWidget* const q_ptr;
 
 public:
-  qSlicerCompathPathManagerWidgetPrivate(
-    qSlicerCompathPathManagerWidget& object);
-  virtual void setupUi(qSlicerCompathPathManagerWidget*);
+  qSlicerVisuaLinePathManagerWidgetPrivate(
+    qSlicerVisuaLinePathManagerWidget& object);
+  virtual void setupUi(qSlicerVisuaLinePathManagerWidget*);
   QString convertCoordinatesToQString(double coord[3]);
 
   QModelIndex SelectedRow;
@@ -59,9 +59,9 @@ public:
 };
 
 // --------------------------------------------------------------------------
-qSlicerCompathPathManagerWidgetPrivate
-::qSlicerCompathPathManagerWidgetPrivate(
-  qSlicerCompathPathManagerWidget& object)
+qSlicerVisuaLinePathManagerWidgetPrivate
+::qSlicerVisuaLinePathManagerWidgetPrivate(
+  qSlicerVisuaLinePathManagerWidget& object)
   : q_ptr(&object)
 {
   this->SelectedHierarchyNode = NULL;
@@ -69,14 +69,14 @@ qSlicerCompathPathManagerWidgetPrivate
 }
 
 // --------------------------------------------------------------------------
-void qSlicerCompathPathManagerWidgetPrivate
-::setupUi(qSlicerCompathPathManagerWidget* widget)
+void qSlicerVisuaLinePathManagerWidgetPrivate
+::setupUi(qSlicerVisuaLinePathManagerWidget* widget)
 {
-  this->Ui_qSlicerCompathPathManagerWidget::setupUi(widget);
+  this->Ui_qSlicerVisuaLinePathManagerWidget::setupUi(widget);
 }
 
 //-----------------------------------------------------------------------------
-QString qSlicerCompathPathManagerWidgetPrivate
+QString qSlicerVisuaLinePathManagerWidgetPrivate
 ::convertCoordinatesToQString(double coord[3])
 {
   std::stringstream tmp;
@@ -92,15 +92,15 @@ QString qSlicerCompathPathManagerWidgetPrivate
 }
 
 //-----------------------------------------------------------------------------
-// qSlicerCompathPathManagerWidget methods
+// qSlicerVisuaLinePathManagerWidget methods
 
 //-----------------------------------------------------------------------------
-qSlicerCompathPathManagerWidget
-::qSlicerCompathPathManagerWidget(QWidget* parentWidget)
+qSlicerVisuaLinePathManagerWidget
+::qSlicerVisuaLinePathManagerWidget(QWidget* parentWidget)
   : Superclass( parentWidget )
-  , d_ptr( new qSlicerCompathPathManagerWidgetPrivate(*this) )
+  , d_ptr( new qSlicerVisuaLinePathManagerWidgetPrivate(*this) )
 {
-  Q_D(qSlicerCompathPathManagerWidget);
+  Q_D(qSlicerVisuaLinePathManagerWidget);
   d->setupUi(this);
 
   connect(d->HierarchySelectorWidget, SIGNAL(nodeActivated(vtkMRMLNode*)),
@@ -126,16 +126,16 @@ qSlicerCompathPathManagerWidget
 }
 
 //-----------------------------------------------------------------------------
-qSlicerCompathPathManagerWidget
-::~qSlicerCompathPathManagerWidget()
+qSlicerVisuaLinePathManagerWidget
+::~qSlicerVisuaLinePathManagerWidget()
 {
 }
 
 //-----------------------------------------------------------------------------
-void qSlicerCompathPathManagerWidget
+void qSlicerVisuaLinePathManagerWidget
 ::onHierarchyNodeChanged(vtkMRMLNode* hierarchy)
 {
-  Q_D(qSlicerCompathPathManagerWidget);
+  Q_D(qSlicerVisuaLinePathManagerWidget);
   
   if (!hierarchy || (d->SelectedHierarchyNode == hierarchy))
     {
@@ -163,10 +163,10 @@ void qSlicerCompathPathManagerWidget
 }
 
 //-----------------------------------------------------------------------------
-void qSlicerCompathPathManagerWidget
+void qSlicerVisuaLinePathManagerWidget
 ::onDeleteButtonClicked()
 {
-  Q_D(qSlicerCompathPathManagerWidget);
+  Q_D(qSlicerVisuaLinePathManagerWidget);
 
   if (!d->TopLevelSelection.isValid())
     {
@@ -195,18 +195,15 @@ void qSlicerCompathPathManagerWidget
 
   if (d->PathTreeModel->rowCount() == 0)
     {
-    // No more items. Disable widgets
-    //d->PathProjectionWidget->setMRMLRulerNode(NULL);
-    //d->TargetProjectionWidget->setMRMLFiducialNode(NULL);
     d->VirtualOffsetSlider->setValue(0);
     }
 }
 
 //-----------------------------------------------------------------------------
-void qSlicerCompathPathManagerWidget
+void qSlicerVisuaLinePathManagerWidget
 ::onClearButtonClicked()
 {
-  Q_D(qSlicerCompathPathManagerWidget);
+  Q_D(qSlicerVisuaLinePathManagerWidget);
 
   if (!d->PathTreeModel ||
       !d->PathProjectionWidget || !d->TargetProjectionWidget ||
@@ -216,16 +213,14 @@ void qSlicerCompathPathManagerWidget
     }
 
   d->PathTreeModel->removeRows(0, d->PathTreeModel->rowCount());
-  //d->PathProjectionWidget->setMRMLRulerNode(NULL);
-  //d->TargetProjectionWidget->setMRMLFiducialNode(NULL);
   d->VirtualOffsetSlider->setValue(0);
 }
 
 //-----------------------------------------------------------------------------
-void qSlicerCompathPathManagerWidget
+void qSlicerVisuaLinePathManagerWidget
 ::onRowSelected(const QModelIndex& index)
 {
-  Q_D(qSlicerCompathPathManagerWidget);
+  Q_D(qSlicerVisuaLinePathManagerWidget);
 
   if (!index.isValid())
     {
@@ -240,15 +235,6 @@ void qSlicerCompathPathManagerWidget
 
   d->SelectedRow = index;
 
-  // Do not update if same parent 
-  /*
-  if (index.parent() == d->TopLevelSelection ||
-      index == d->TopLevelSelection)
-    {
-    return;
-    }
-  */
-
   // Get top level selection
   d->TopLevelSelection = index;
   if (index.parent().isValid())
@@ -257,8 +243,8 @@ void qSlicerCompathPathManagerWidget
     }
   
   // Get item
-  qSlicerCompathTreeItem* topLevelItem
-    = dynamic_cast<qSlicerCompathTreeItem*>(d->PathTreeModel->itemFromIndex(d->TopLevelSelection));
+  qSlicerVisuaLineTreeItem* topLevelItem
+    = dynamic_cast<qSlicerVisuaLineTreeItem*>(d->PathTreeModel->itemFromIndex(d->TopLevelSelection));
   if (topLevelItem)
     {
     if (topLevelItem->getPathNode())
@@ -284,10 +270,10 @@ void qSlicerCompathPathManagerWidget
 }
 
 //-----------------------------------------------------------------------------
-void qSlicerCompathPathManagerWidget
+void qSlicerVisuaLinePathManagerWidget
 ::onVirtualOffsetChanged(double newOffset)
 {
-  Q_D(qSlicerCompathPathManagerWidget);
+  Q_D(qSlicerVisuaLinePathManagerWidget);
 
   if (!d->TopLevelSelection.isValid())
     {
@@ -300,14 +286,14 @@ void qSlicerCompathPathManagerWidget
     }
 
   // Get Item
-  qSlicerCompathTreeItem* item
-    = dynamic_cast<qSlicerCompathTreeItem*>(d->PathTreeModel->itemFromIndex(d->TopLevelSelection));
+  qSlicerVisuaLineTreeItem* item
+    = dynamic_cast<qSlicerVisuaLineTreeItem*>(d->PathTreeModel->itemFromIndex(d->TopLevelSelection));
 
   if (item)
     {
     if (!item->getVirtualOffsetNode())
       {
-      // Offset node not set
+      // Create new ruler for virtual tip
       vtkSmartPointer<vtkMRMLAnnotationRulerNode> virtualTip
         = vtkSmartPointer<vtkMRMLAnnotationRulerNode>::New();
       virtualTip->HideFromEditorsOn();
@@ -319,18 +305,18 @@ void qSlicerCompathPathManagerWidget
 }
 
 //-----------------------------------------------------------------------------
-void qSlicerCompathPathManagerWidget
+void qSlicerVisuaLinePathManagerWidget
 ::onItemChanged(QStandardItem* item)
 {
-  Q_D(qSlicerCompathPathManagerWidget);
+  Q_D(qSlicerVisuaLinePathManagerWidget);
 
   if (!item || !d->PathTreeModel)
     {
     return;
     }
 
-  qSlicerCompathTreeItem* itemModified
-    = dynamic_cast<qSlicerCompathTreeItem*>(item);
+  qSlicerVisuaLineTreeItem* itemModified
+    = dynamic_cast<qSlicerVisuaLineTreeItem*>(item);
 
   if (!itemModified)
     {
@@ -370,8 +356,8 @@ void qSlicerCompathPathManagerWidget
       }
 
     // Get parent
-    qSlicerCompathTreeItem* parentItem
-      = dynamic_cast<qSlicerCompathTreeItem*>(d->PathTreeModel->itemFromIndex(itemIndex.parent()));
+    qSlicerVisuaLineTreeItem* parentItem
+      = dynamic_cast<qSlicerVisuaLineTreeItem*>(d->PathTreeModel->itemFromIndex(itemIndex.parent()));
     
     // Update visibility
     if (parentItem)
@@ -410,10 +396,10 @@ void qSlicerCompathPathManagerWidget
 }
 
 //-----------------------------------------------------------------------------
-void qSlicerCompathPathManagerWidget
+void qSlicerVisuaLinePathManagerWidget
 ::populateTreeView()
 {
-  Q_D(qSlicerCompathPathManagerWidget);
+  Q_D(qSlicerVisuaLinePathManagerWidget);
 
   if (!d->SelectedHierarchyNode || !d->PathTreeModel)
     {
@@ -430,13 +416,13 @@ void qSlicerCompathPathManagerWidget
     if (ruler)
       {
       // Create a top node
-      qSlicerCompathTreeItem* topNode = new qSlicerCompathTreeItem(ruler->GetName());
+      qSlicerVisuaLineTreeItem* topNode = new qSlicerVisuaLineTreeItem(ruler->GetName());
       topNode->setCheckable(true);
       topNode->setCheckState(Qt::Checked);
       d->PathTreeModel->appendRow(topNode);
 
       // Create Path node
-      qSlicerCompathTreeItem* pathNode = new qSlicerCompathTreeItem("Path");
+      qSlicerVisuaLineTreeItem* pathNode = new qSlicerVisuaLineTreeItem("Path");
       pathNode->setCheckable(true);
       pathNode->setPathItem(true);
       pathNode->setCheckState(Qt::Checked);
@@ -447,7 +433,7 @@ void qSlicerCompathPathManagerWidget
       QString targetName = QString("Target ");
       ruler->GetPosition2(targetPosition);
       targetName.append(d->convertCoordinatesToQString(targetPosition));
-      qSlicerCompathTreeItem* targetNode = new qSlicerCompathTreeItem(targetName);
+      qSlicerVisuaLineTreeItem* targetNode = new qSlicerVisuaLineTreeItem(targetName);
       targetNode->setCheckable(true);
       targetNode->setCheckState(Qt::Checked);
       topNode->appendRow(targetNode);
