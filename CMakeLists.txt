@@ -18,7 +18,7 @@ set(MODULE_TITLE ${MODULE_NAME})
 string(TOUPPER ${MODULE_NAME} MODULE_NAME_UPPER)
 
 #-----------------------------------------------------------------------------
-if(NOT Slicer_SOURCE_DIR)
+if(NOT DEFINED SlicerIGT_SUPERBUILD)
   find_package(Slicer REQUIRED)
   include(${Slicer_USE_FILE})
 endif()
