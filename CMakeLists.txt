@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 2.8.7)
 
 #-----------------------------------------------------------------------------
-#if(NOT Slicer_SOURCE_DIR)
-#  set(EXTENSION_NAME VisuaLine)
-#  set(EXTENSION_HOMEPAGE "http://www.slicer.org/slicerWiki/index.php/Documentation/Nigthly/Extensions/VisuaLine")
-#  set(EXTENSION_CATEGORY "Examples")
-#  set(EXTENSION_CONTRIBUTORS "Jean-Christophe Fillion-Robin (Kitware)")
-#  set(EXTENSION_DESCRIPTION "This is an example of extension bundling a loadable module")
-#  set(EXTENSION_ICONURL "http://viewvc.slicer.org/viewvc.cgi/Slicer4/trunk/Extensions/Testing/VisuaLine/Resources/Icons/VisuaLine.png?revision=19437&view=co")
-#  set(EXTENSION_SCREENSHOTURLS "http://wiki.slicer.org/slicerWiki/images/4/42/Slicer-r19441-VisuaLine-screenshot.png")
-#endif()
+if(NOT Slicer_SOURCE_DIR)
+  set(EXTENSION_NAME VisuaLine)
+  set(EXTENSION_HOMEPAGE "http://www.slicer.org/slicerWiki/index.php/Documentation/Nigthly/Extensions/VisuaLine")
+  set(EXTENSION_CATEGORY "Examples")
+  set(EXTENSION_CONTRIBUTORS "Jean-Christophe Fillion-Robin (Kitware)")
+  set(EXTENSION_DESCRIPTION "This is an example of extension bundling a loadable module")
+  set(EXTENSION_ICONURL "http://viewvc.slicer.org/viewvc.cgi/Slicer4/trunk/Extensions/Testing/VisuaLine/Resources/Icons/VisuaLine.png?revision=19437&view=co")
+  set(EXTENSION_SCREENSHOTURLS "http://wiki.slicer.org/slicerWiki/images/4/42/Slicer-r19441-VisuaLine-screenshot.png")
+endif()
 
 #-----------------------------------------------------------------------------
 set(MODULE_NAME VisuaLine)
@@ -24,7 +24,6 @@ if(NOT DEFINED SlicerIGT_SUPERBUILD)
 endif()
 
 #-----------------------------------------------------------------------------
-add_subdirectory(MRML)
 add_subdirectory(Logic)
 add_subdirectory(Widgets)
 
@@ -33,8 +32,6 @@ set(MODULE_EXPORT_DIRECTIVE "Q_SLICER_QTMODULES_${MODULE_NAME_UPPER}_EXPORT")
 
 # Current_{source,binary} and Slicer_{Libs,Base} already included
 set(MODULE_INCLUDE_DIRECTORIES
-  ${CMAKE_CURRENT_SOURCE_DIR}/MRML
-  ${CMAKE_CURRENT_BINARY_DIR}/MRML
   ${CMAKE_CURRENT_SOURCE_DIR}/Logic
   ${CMAKE_CURRENT_BINARY_DIR}/Logic
   ${CMAKE_CURRENT_SOURCE_DIR}/Widgets
@@ -58,7 +55,6 @@ set(MODULE_UI_SRCS
   )
 
 set(MODULE_TARGET_LIBRARIES
-  vtkSlicer${MODULE_NAME}ModuleMRML
   vtkSlicer${MODULE_NAME}ModuleLogic
   qSlicer${MODULE_NAME}ModuleWidgets
   )

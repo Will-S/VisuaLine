@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>327</width>
-    <height>376</height>
+    <width>376</width>
+    <height>429</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -111,7 +111,7 @@
        <widget class="qMRMLNodeComboBox" name="HierarchySelectorWidget">
         <property name="nodeTypes">
          <stringlist>
-          <string>vtkMRMLNITNode</string>
+          <string>vtkMRMLPathPlannerTrajectoryNode</string>
          </stringlist>
         </property>
         <property name="showChildNodeTypes">

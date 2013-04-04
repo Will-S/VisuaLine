@@ -18,9 +18,6 @@
 // VisuaLine Logic includes
 #include "vtkSlicerVisuaLineLogic.h"
 
-// MRML includes
-#include "vtkMRMLNITNode.h"
-
 // VTK includes
 #include <vtkNew.h>
 
@@ -60,10 +57,6 @@ void vtkSlicerVisuaLineLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 void vtkSlicerVisuaLineLogic::RegisterNodes()
 {
   assert(this->GetMRMLScene() != 0);
-
-  vtkMRMLNITNode* nitNode = vtkMRMLNITNode::New();
-  this->GetMRMLScene()->RegisterNodeClass(nitNode);
-  nitNode->Delete();
 }
 
 //---------------------------------------------------------------------------
