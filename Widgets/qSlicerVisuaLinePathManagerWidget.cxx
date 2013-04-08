@@ -435,10 +435,10 @@ void qSlicerVisuaLinePathManagerWidget
       targetName.append(d->convertCoordinatesToQString(targetPosition));
       qSlicerVisuaLineTreeItem* targetNode = new qSlicerVisuaLineTreeItem(targetName);
       targetNode->setCheckable(true);
-      targetNode->setCheckState(Qt::Checked);
+      targetNode->setCheckState(Qt::Unchecked);
       topNode->appendRow(targetNode);
 
-      // Create fiducial at target point
+      // Create fiducial at target point (hiden by default)
       vtkSmartPointer<vtkMRMLAnnotationFiducialNode> targetFiducial =
 	vtkSmartPointer<vtkMRMLAnnotationFiducialNode>::New();
       targetFiducial->Initialize(this->mrmlScene());
@@ -447,6 +447,7 @@ void qSlicerVisuaLinePathManagerWidget
       // Set nodes to top level node
       topNode->setPathNode(ruler);
       topNode->setTargetNode(targetFiducial);
+      topNode->setTargetVisibility(false);
       }
     }
 }
