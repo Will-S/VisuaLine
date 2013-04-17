@@ -263,10 +263,7 @@ void qSlicerVisuaLinePathManagerWidget
       }
     else
       {
-      if (topLevelItem->getVirtualOffset() != 0)
-        {
-        d->VirtualOffsetSlider->setValue(topLevelItem->getVirtualOffset());
-        }
+      d->VirtualOffsetSlider->setValue(topLevelItem->getVirtualOffset());
       }
     }
 }
@@ -298,7 +295,7 @@ void qSlicerVisuaLinePathManagerWidget
       // Create new ruler for virtual tip
       vtkSmartPointer<vtkMRMLAnnotationRulerNode> virtualTip
         = vtkSmartPointer<vtkMRMLAnnotationRulerNode>::New();
-      virtualTip->HideFromEditorsOn();
+      virtualTip->HideFromEditorsOff();
       virtualTip->Initialize(this->mrmlScene());
       item->setVirtualOffsetNode(virtualTip);
       }
