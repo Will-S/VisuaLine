@@ -139,7 +139,7 @@ void qSlicerVisuaLinePathManagerWidget
 {
   Q_D(qSlicerVisuaLinePathManagerWidget);
   
-  if (!hierarchy || (d->SelectedHierarchyNode == hierarchy))
+  if (!hierarchy)
     {
     return;
     }
