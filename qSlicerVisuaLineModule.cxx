@@ -70,13 +70,16 @@ qSlicerVisuaLineModule::~qSlicerVisuaLineModule()
 //-----------------------------------------------------------------------------
 QString qSlicerVisuaLineModule::helpText()const
 {
-  return "This is a loadable module bundled in an extension";
+  return QString("VisuaLine allows users to display lines on Slicer."
+  " The main purpose of this module is to visualize needle trajectories as well as targets and cross-section"
+  " along the needle path.");
 }
 
 //-----------------------------------------------------------------------------
 QString qSlicerVisuaLineModule::acknowledgementText()const
 {
-  return "This work was was partially funded by NIH grant 3P41RR013218-12S1";
+  return QString("It is supported by grants 5P01CA067165, 5R01CA124377, 5R01CA138586, 2R44DE019322, 7R01CA124377," 
+  "5R42CA137886, 8P41EB015898");
 }
 
 //-----------------------------------------------------------------------------
