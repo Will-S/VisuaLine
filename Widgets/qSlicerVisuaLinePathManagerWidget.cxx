@@ -144,6 +144,9 @@ void qSlicerVisuaLinePathManagerWidget
     return;
     }
 
+  qvtkReconnect(d->SelectedHierarchyNode, hierarchy, vtkCommand::ModifiedEvent,
+		this, SLOT(refreshView()));
+
   d->SelectedHierarchyNode = 
     vtkMRMLAnnotationHierarchyNode::SafeDownCast(hierarchy);
   if (!d->SelectedHierarchyNode)
@@ -153,15 +156,25 @@ void qSlicerVisuaLinePathManagerWidget
 
   d->ActiveNodeLabel->setText(d->SelectedHierarchyNode->GetName());
 
-  double nOfChildren = d->SelectedHierarchyNode->GetNumberOfChildrenNodes();
-  if (nOfChildren > 0)
-    {
-    // Clear table
-    this->onClearButtonClicked();
+  this->refreshView();
+}
 
-    // Load new hierarchy table
-    this->populateTreeView();
+//-----------------------------------------------------------------------------
+void qSlicerVisuaLinePathManagerWidget
+::refreshView()
+{
+  Q_D(qSlicerVisuaLinePathManagerWidget);
+
+  if (!d->SelectedHierarchyNode)
+    {
+    return;
     }
+  
+  // Clear table
+  this->onClearButtonClicked();
+  
+  // Load new hierarchy table
+  this->populateTreeView();
 }
 
 //-----------------------------------------------------------------------------
@@ -371,21 +384,22 @@ void qSlicerVisuaLinePathManagerWidget
         parentItem->setTargetVisibility(itemModified->checkState() == Qt::Checked);
         }
 
+      // TODO: Define behavior
       // If all childs are turned off, turn off parent
-      bool allDifferent = true;
+      bool allSame = true;
       Qt::CheckState newState = parentItem->checkState();
       for (int i = 0; i < parentItem->rowCount(); i++)
         {
         if (parentItem->child(i)->checkState() == parentItem->checkState())
           {
           // At least one has the same state. Exit the loop.
-          allDifferent &= false;
+          allSame &= false;
           break;
           }
         newState = parentItem->child(i)->checkState();
         }
       
-      if (allDifferent)
+      if (allSame)
         {
         // All children have different state. Update parent.
         parentItem->setCheckState(newState);
@@ -411,13 +425,16 @@ void qSlicerVisuaLinePathManagerWidget
     // Get ruler
     vtkMRMLAnnotationRulerNode* ruler = 
       vtkMRMLAnnotationRulerNode::SafeDownCast(d->SelectedHierarchyNode->GetNthChildNode(i)->GetAssociatedNode());
-    
+   
     if (ruler)
       {
+      // Show ruler
+      ruler->SetDisplayVisibility(1);
+
       // Create a top node
       qSlicerVisuaLineTreeItem* topNode = new qSlicerVisuaLineTreeItem(ruler->GetName());
       topNode->setCheckable(true);
-      topNode->setCheckState(Qt::Checked);
+      topNode->setCheckState(Qt::Unchecked);
       d->PathTreeModel->appendRow(topNode);
 
       // Create Path node
@@ -436,12 +453,15 @@ void qSlicerVisuaLinePathManagerWidget
       targetNode->setCheckable(true);
       targetNode->setCheckState(Qt::Unchecked);
       topNode->appendRow(targetNode);
-
+   
       // Create fiducial at target point (hiden by default)
+      // Info: Disable ModifiedEvent to avoid infinite loop of refreshing
+      d->SelectedHierarchyNode->DisableModifiedEventOn();
       vtkSmartPointer<vtkMRMLAnnotationFiducialNode> targetFiducial =
 	vtkSmartPointer<vtkMRMLAnnotationFiducialNode>::New();
       targetFiducial->Initialize(this->mrmlScene());
       targetFiducial->SetFiducialCoordinates(targetPosition);
+      d->SelectedHierarchyNode->DisableModifiedEventOff();
       
       // Set nodes to top level node
       topNode->setPathNode(ruler);

@@ -61,6 +61,7 @@ protected slots:
   void onVirtualOffsetChanged(double newOffset);
   void onItemChanged(QStandardItem*);
   void populateTreeView();
+  void refreshView();
 
 protected:
   QScopedPointer<qSlicerVisuaLinePathManagerWidgetPrivate> d_ptr;

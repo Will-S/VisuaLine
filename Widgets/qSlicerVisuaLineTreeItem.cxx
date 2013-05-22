@@ -37,7 +37,9 @@ qSlicerVisuaLineTreeItem
 qSlicerVisuaLineTreeItem::
 ~qSlicerVisuaLineTreeItem()
 {
-  this->setVisibility(false);
+  // BUG: Crash when calling this methods.
+  // Probably nodes have been deleted but pointers not set to NULL
+  //this->setVisibility(false);
 }
 
 // --------------------------------------------------------------------------
