@@ -31,6 +31,8 @@
 #include "ui_qSlicerVisuaLinePathManagerWidget.h"
 #include "qSlicerVisuaLineTreeItem.h"
 
+#include <vtkCollection.h>
+
 #include <vtkMRMLAnnotationFiducialNode.h>
 #include <vtkMRMLAnnotationHierarchyNode.h>
 #include <vtkMRMLAnnotationLineDisplayNode.h>
@@ -131,24 +133,28 @@ qSlicerVisuaLinePathManagerWidget
 qSlicerVisuaLinePathManagerWidget
 ::~qSlicerVisuaLinePathManagerWidget()
 {
+  Q_D(qSlicerVisuaLinePathManagerWidget);
+
+  // Clear widget to call items destructor and avoid leaks
+  d->PathTreeModel->removeRows(0, d->PathTreeModel->rowCount());
 }
 
 //-----------------------------------------------------------------------------
 void qSlicerVisuaLinePathManagerWidget
-::onHierarchyNodeChanged(vtkMRMLNode* hierarchy)
+::onHierarchyNodeChanged(vtkMRMLNode* newHierarchy)
 {
   Q_D(qSlicerVisuaLinePathManagerWidget);
   
-  if (!hierarchy)
+  if (!newHierarchy)
     {
     return;
     }
 
-  qvtkReconnect(d->SelectedHierarchyNode, hierarchy, vtkCommand::ModifiedEvent,
-		this, SLOT(refreshView()));
+  vtkMRMLAnnotationHierarchyNode* oldHierarchy =
+    d->SelectedHierarchyNode;
 
   d->SelectedHierarchyNode = 
-    vtkMRMLAnnotationHierarchyNode::SafeDownCast(hierarchy);
+    vtkMRMLAnnotationHierarchyNode::SafeDownCast(newHierarchy);
   if (!d->SelectedHierarchyNode)
     {
     return;
@@ -156,25 +162,98 @@ void qSlicerVisuaLinePathManagerWidget
 
   d->ActiveNodeLabel->setText(d->SelectedHierarchyNode->GetName());
 
-  this->refreshView();
-}
-
-//-----------------------------------------------------------------------------
-void qSlicerVisuaLinePathManagerWidget
-::refreshView()
-{
-  Q_D(qSlicerVisuaLinePathManagerWidget);
-
-  if (!d->SelectedHierarchyNode)
-    {
-    return;
-    }
-  
   // Clear table
   this->onClearButtonClicked();
   
   // Load new hierarchy table
   this->populateTreeView();
+
+  // Observe modifications of hierarchy node and update view
+  qvtkReconnect(oldHierarchy, newHierarchy, vtkCommand::ModifiedEvent,
+		this, SLOT(updateWidgetFromMRML()));
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerVisuaLinePathManagerWidget
+::updateWidgetFromMRML()
+{
+  Q_D(qSlicerVisuaLinePathManagerWidget);
+  
+  // Extract rulers from hierarchy
+  vtkCollection* nodeRulers = vtkCollection::New();
+  double childCount = d->SelectedHierarchyNode->GetNumberOfChildrenNodes();
+  for (int i = 0; i < childCount; i++)
+    {
+    vtkMRMLAnnotationRulerNode* isRuler = 
+      vtkMRMLAnnotationRulerNode::SafeDownCast(d->SelectedHierarchyNode->GetNthChildNode(i)->GetAssociatedNode());
+    
+    if (isRuler)
+      {
+      nodeRulers->AddItem(isRuler);
+      }
+    }
+
+  int numberOfRulers = nodeRulers->GetNumberOfItems();
+  int numberOfLines = d->PathTreeModel->rowCount();
+
+  // First import new trajectories
+  for (int j = 0; j < numberOfRulers; j++)
+    {
+    vtkMRMLAnnotationRulerNode* ruler = 
+      vtkMRMLAnnotationRulerNode::SafeDownCast(nodeRulers->GetItemAsObject(j));
+    
+    bool rulerFound = false;
+    for (int k = 0; k < numberOfLines; k++)
+      {
+      qSlicerVisuaLineTreeItem* tmpItem =
+	dynamic_cast<qSlicerVisuaLineTreeItem*>(d->PathTreeModel->item(k));
+      if (tmpItem->getPathNode() == ruler)
+	{
+	rulerFound = true;
+
+	// Update name if different
+	if (strcmp(ruler->GetName(), tmpItem->text().toStdString().c_str()) != 0)
+	  {
+	  tmpItem->setText(ruler->GetName());
+	  }
+
+	break;
+	}
+      }
+    
+    if (!rulerFound)
+      {
+      this->addNewPath(ruler);
+      }
+    }
+
+  // Then check if trajectories have been removed
+  for (int l = 0; l < numberOfLines; l++)
+    {
+    qSlicerVisuaLineTreeItem* tmpItem =
+      dynamic_cast<qSlicerVisuaLineTreeItem*>(d->PathTreeModel->item(l));
+
+    bool lineFound = false;
+    for (int m = 0; m < numberOfRulers; m++)
+      {
+      vtkMRMLAnnotationRulerNode* ruler = 
+	vtkMRMLAnnotationRulerNode::SafeDownCast(nodeRulers->GetItemAsObject(m));
+      if (tmpItem->getPathNode() == ruler)
+	{
+	lineFound = true;
+	break;
+	}
+      }
+
+    if (!lineFound)
+      {
+      d->PathTreeModel->removeRows(l,1);
+      numberOfLines = d->PathTreeModel->rowCount();
+      }
+    }
+
+
+  nodeRulers->Delete();
 }
 
 //-----------------------------------------------------------------------------
@@ -425,48 +504,62 @@ void qSlicerVisuaLinePathManagerWidget
     // Get ruler
     vtkMRMLAnnotationRulerNode* ruler = 
       vtkMRMLAnnotationRulerNode::SafeDownCast(d->SelectedHierarchyNode->GetNthChildNode(i)->GetAssociatedNode());
-   
-    if (ruler)
-      {
-      // Show ruler
-      ruler->SetDisplayVisibility(1);
-
-      // Create a top node
-      qSlicerVisuaLineTreeItem* topNode = new qSlicerVisuaLineTreeItem(ruler->GetName());
-      topNode->setCheckable(true);
-      topNode->setCheckState(Qt::Unchecked);
-      d->PathTreeModel->appendRow(topNode);
-
-      // Create Path node
-      qSlicerVisuaLineTreeItem* pathNode = new qSlicerVisuaLineTreeItem("Path");
-      pathNode->setCheckable(true);
-      pathNode->setPathItem(true);
-      pathNode->setCheckState(Qt::Checked);
-      topNode->appendRow(pathNode);
-
-      // Create target node
-      double targetPosition[3];
-      QString targetName = QString("Target ");
-      ruler->GetPosition2(targetPosition);
-      targetName.append(d->convertCoordinatesToQString(targetPosition));
-      qSlicerVisuaLineTreeItem* targetNode = new qSlicerVisuaLineTreeItem(targetName);
-      targetNode->setCheckable(true);
-      targetNode->setCheckState(Qt::Unchecked);
-      topNode->appendRow(targetNode);
-   
-      // Create fiducial at target point (hiden by default)
-      // Info: Disable ModifiedEvent to avoid infinite loop of refreshing
-      d->SelectedHierarchyNode->DisableModifiedEventOn();
-      vtkSmartPointer<vtkMRMLAnnotationFiducialNode> targetFiducial =
-	vtkSmartPointer<vtkMRMLAnnotationFiducialNode>::New();
-      targetFiducial->Initialize(this->mrmlScene());
-      targetFiducial->SetFiducialCoordinates(targetPosition);
-      d->SelectedHierarchyNode->DisableModifiedEventOff();
-      
-      // Set nodes to top level node
-      topNode->setPathNode(ruler);
-      topNode->setTargetNode(targetFiducial);
-      topNode->setTargetVisibility(false);
-      }
+    
+    this->addNewPath(ruler);
     }
+}
+
+//-----------------------------------------------------------------------------
+void qSlicerVisuaLinePathManagerWidget
+::addNewPath(vtkMRMLAnnotationRulerNode* ruler)
+{
+  Q_D(qSlicerVisuaLinePathManagerWidget);
+
+  if (!ruler)
+    {
+    return;
+    }
+
+  // Show ruler
+  ruler->SetDisplayVisibility(1);
+  
+  // Create a top node
+  qSlicerVisuaLineTreeItem* topNode = new qSlicerVisuaLineTreeItem(ruler->GetName());
+  topNode->setCheckable(true);
+  topNode->setCheckState(Qt::Unchecked);
+  d->PathTreeModel->appendRow(topNode);
+  
+  // Create Path node
+  qSlicerVisuaLineTreeItem* pathNode = new qSlicerVisuaLineTreeItem("Path");
+  pathNode->setCheckable(true);
+  pathNode->setPathItem(true);
+  pathNode->setCheckState(Qt::Checked);
+  topNode->appendRow(pathNode);
+  
+  // Create target node
+  double targetPosition[3];
+  QString targetName = QString("Target ");
+  ruler->GetPosition2(targetPosition);
+  targetName.append(d->convertCoordinatesToQString(targetPosition));
+  qSlicerVisuaLineTreeItem* targetNode = new qSlicerVisuaLineTreeItem(targetName);
+  targetNode->setCheckable(true);
+  targetNode->setCheckState(Qt::Unchecked);
+  topNode->appendRow(targetNode);
+  
+  // Create fiducial at target point (hiden by default)
+  // Info: Disable ModifiedEvent to avoid infinite loop of refreshing
+  // PathNode is not set when ModifiedEvent is triggered,
+  // comparison in updateWidgetfromMRML will fail, creating a new ruler
+  // etc...
+  d->SelectedHierarchyNode->DisableModifiedEventOn();
+  vtkSmartPointer<vtkMRMLAnnotationFiducialNode> targetFiducial =
+    vtkSmartPointer<vtkMRMLAnnotationFiducialNode>::New();
+  targetFiducial->Initialize(this->mrmlScene());
+  targetFiducial->SetFiducialCoordinates(targetPosition);
+  d->SelectedHierarchyNode->DisableModifiedEventOff();
+  
+  // Set nodes to top level node
+  topNode->setPathNode(ruler);
+  topNode->setTargetNode(targetFiducial);
+  topNode->setTargetVisibility(false);
 }

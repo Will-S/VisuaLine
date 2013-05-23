@@ -36,9 +36,9 @@
 #include "qSlicerWidget.h"
 
 class qSlicerVisuaLinePathManagerWidgetPrivate;
-//class qSlicerVisuaLineTreeItem;
 class vtkMRMLScene;
 class vtkMRMLNode;
+class vtkMRMLAnnotationRulerNode;
 
 /// \ingroup Slicer_QtModules_VisuaLine
 class Q_SLICER_MODULE_VISUALINE_WIDGETS_EXPORT qSlicerVisuaLinePathManagerWidget
@@ -54,15 +54,16 @@ public:
 public slots:
 
 protected slots:
-  void onHierarchyNodeChanged(vtkMRMLNode* hierarchy);
+  void onHierarchyNodeChanged(vtkMRMLNode* newHierarchy);
   void onDeleteButtonClicked();
   void onClearButtonClicked();
   void onRowSelected(const QModelIndex& index);
   void onVirtualOffsetChanged(double newOffset);
   void onItemChanged(QStandardItem*);
   void populateTreeView();
-  void refreshView();
-
+  void updateWidgetFromMRML();
+  void addNewPath(vtkMRMLAnnotationRulerNode* ruler);
+  
 protected:
   QScopedPointer<qSlicerVisuaLinePathManagerWidgetPrivate> d_ptr;
 
